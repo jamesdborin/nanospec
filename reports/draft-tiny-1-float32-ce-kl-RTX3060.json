@@ -1,0 +1,130 @@
+{
+  "passed": true,
+  "device": "NVIDIA GeForce RTX 3060",
+  "torchspec_revision": "076a738fdd7e64be1495338f055e8188784633c4",
+  "reference_objective": "independent autograd CE + KL on TorchSpec components",
+  "config": {
+    "hidden_size": 64,
+    "intermediate_size": 128,
+    "num_hidden_layers": 2,
+    "num_attention_heads": 4,
+    "num_key_value_heads": 2,
+    "head_dim": 16,
+    "vocab_size": 128,
+    "target_hidden_size": 64,
+    "target_num_hidden_layers": 8,
+    "num_target_layers": 2,
+    "target_layer_ids": [
+      1,
+      5
+    ],
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 10000.0,
+    "max_position_embeddings": 256,
+    "mask_token_id": 127,
+    "markov_rank": 16,
+    "markov_head_type": "vanilla",
+    "fc_norm": true,
+    "tie_word_embeddings": false
+  },
+  "objective": {
+    "block_size": 7,
+    "num_anchors": 2,
+    "gamma": 4.0,
+    "ce": 0.1,
+    "kl": 0.9
+  },
+  "steps": [
+    {
+      "step": 1,
+      "nanospec_loss": 1.0876169204711914,
+      "torchspec_loss": 1.0876169204711914,
+      "gradients": {
+        "cosine": 1.0,
+        "relative_l2": 1.9329741871347437e-07,
+        "max_abs": 2.086162567138672e-07,
+        "worst_parameter": "layers.1.self_attn.v_proj.weight"
+      },
+      "parameters": {
+        "cosine": 0.9999999999963975,
+        "relative_l2": 1.9038614085564805e-08,
+        "max_abs": 3.520399332046509e-07,
+        "worst_parameter": "layers.0.mlp.up_proj.weight"
+      },
+      "draft_hidden": {
+        "cosine_mean": 1.0,
+        "cosine_min": 0.9999998807907104,
+        "relative_l2": 6.419456610728957e-08,
+        "max_abs": 3.5762786865234375e-07
+      },
+      "nanospec_grad_norm": 0.8870048522949219,
+      "torchspec_grad_norm": 0.8870047926902771
+    },
+    {
+      "step": 2,
+      "nanospec_loss": 1.0533183813095093,
+      "torchspec_loss": 1.0533183813095093,
+      "gradients": {
+        "cosine": 0.9999999996430035,
+        "relative_l2": 2.4502239912669233e-07,
+        "max_abs": 1.6391277313232422e-07,
+        "worst_parameter": "layers.1.self_attn.v_proj.weight"
+      },
+      "parameters": {
+        "cosine": 0.9999999999935103,
+        "relative_l2": 2.223143180038192e-08,
+        "max_abs": 3.520399332046509e-07,
+        "worst_parameter": "layers.0.mlp.up_proj.weight"
+      },
+      "draft_hidden": {
+        "cosine_mean": 1.0,
+        "cosine_min": 0.9999999403953552,
+        "relative_l2": 7.333613183391208e-08,
+        "max_abs": 4.76837158203125e-07
+      },
+      "nanospec_grad_norm": 0.7771798968315125,
+      "torchspec_grad_norm": 0.7771798968315125
+    },
+    {
+      "step": 3,
+      "nanospec_loss": 1.0230185985565186,
+      "torchspec_loss": 1.0230185985565186,
+      "gradients": {
+        "cosine": 1.0,
+        "relative_l2": 3.0690678332540683e-07,
+        "max_abs": 2.086162567138672e-07,
+        "worst_parameter": "layers.0.self_attn.v_proj.weight"
+      },
+      "parameters": {
+        "cosine": 1.0,
+        "relative_l2": 2.6349308610421423e-08,
+        "max_abs": 3.520399332046509e-07,
+        "worst_parameter": "layers.0.mlp.up_proj.weight"
+      },
+      "draft_hidden": {
+        "cosine_mean": 1.0,
+        "cosine_min": 0.9999998807907104,
+        "relative_l2": 8.86350619566656e-08,
+        "max_abs": 4.76837158203125e-07
+      },
+      "nanospec_grad_norm": 0.7002245783805847,
+      "torchspec_grad_norm": 0.7002244591712952
+    }
+  ],
+  "source_sha256": {
+    "nanospec/__init__.py": "0a182cad24ea5a72cb6b2849058150edc38138cb6d5d2042aed2b81d7f9d6566",
+    "nanospec/checkpoint.py": "9870370ad5b8123a883aa927c2b588e9fc6291a8cd5c4077b6ccc863d2bfff72",
+    "nanospec/config.py": "2940522b9559cdcdb761cbd710074c872a87855f6c781ea87af2377ed21d31ae",
+    "nanospec/distributed.py": "1f92e72688e1c58b95ac7aaaec7ca0e372a50a06ff9b52b199e1e246c8f7396a",
+    "nanospec/dspark.py": "b76ef5f6a83a98dbae80d04a80f099a87cd0466ba8517955e2f0c86afe233a8c",
+    "nanospec/layers.py": "00cf99e038805dc76b4d3a6cced43b4e1d75abf5bb6441b94fc7c8fa237c8bcf",
+    "nanospec/objective.py": "9190dab5bdc31a57fea045f4252473022c12cc6d70ca85f1dc5816b3a44185c2",
+    "nanospec/ops.py": "c99794cf0bfa3de329f643a79aa54a811af328c62b1185914cfe8b6e849ca427",
+    "nanospec/qwen.py": "45e47abbec450014fdadcea1a30096fa92aee6c14ff11eac5eb9b0e72ece4c0f",
+    "nanospec/shard.py": "5d6488d13abcdc4b50e5da300bf81238202503c4e8684454872b1d1d04ae5942",
+    "nanospec/train.py": "28b13c0854f7c01cb4b1fa09f033157a349827642443f9378f50c0d51880f130",
+    "experiments/__init__.py": "f1ba69ee6dd7e2a783d9e6e5a60f1f4ded7f420a0154fde8442e7eec1bcb05e1",
+    "experiments/compare.py": "c354573ff52b71941e493bd3b5330a591e1efad187a641c2dcd9e0407597c4a8",
+    "experiments/reference.py": "2058ade4804615a88a7ed97d8be105f05b4c433ad1fa14f74905a2a6dcace107"
+  }
+}

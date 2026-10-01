@@ -1,0 +1,798 @@
+{
+  "passed": true,
+  "bitwise_identical": true,
+  "serial_median_ms": 65.81572723388672,
+  "overlap_median_ms": 58.11471366882324,
+  "speedup": 1.1325140068477155,
+  "time_reduction_percent": 11.700871339910435,
+  "config": {
+    "hidden_size": 5120,
+    "intermediate_size": 15360,
+    "num_hidden_layers": 5,
+    "num_attention_heads": 40,
+    "num_key_value_heads": 8,
+    "head_dim": 128,
+    "vocab_size": 248320,
+    "target_hidden_size": 5120,
+    "target_num_hidden_layers": 64,
+    "num_target_layers": 5,
+    "target_layer_ids": [
+      1,
+      16,
+      31,
+      46,
+      61
+    ],
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 10000000.0,
+    "max_position_embeddings": 262144,
+    "mask_token_id": 248063,
+    "markov_rank": 256,
+    "markov_head_type": "vanilla",
+    "fc_norm": false,
+    "tie_word_embeddings": false
+  },
+  "objective": {
+    "block_size": 7,
+    "num_anchors": 8,
+    "gamma": 4.0,
+    "ce": 0.1,
+    "kl": 0.9
+  },
+  "train_gpus": 4,
+  "dtype": "bfloat16",
+  "sequence_length": 128,
+  "timed_steps_per_window": 6,
+  "measurement": "Full draft forward, backward and AdamW; fixed teacher tensors; 3 warmups/window; ABBA order; synchronized wall time, maximum across ranks; inference excluded",
+  "trace": "/artifacts/overlap-qwen-4-bfloat16-ce-kl-H100-trace.json",
+  "communication_compute_intersections": [
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 811.866,
+      "compute_overlap_us": 0
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1436.345,
+      "compute_overlap_us": 358.4501953125
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1401.747,
+      "compute_overlap_us": 285.3515625
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1418.421,
+      "compute_overlap_us": 300.947265625
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1409.012,
+      "compute_overlap_us": 299.28125
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1414.804,
+      "compute_overlap_us": 284.68359375
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 669.445,
+      "compute_overlap_us": 140.0205078125
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 640.544,
+      "compute_overlap_us": 0
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 2142.914,
+      "compute_overlap_us": 1917.5986328125
+    },
+    {
+      "kernel": "ncclDevKernel_ReduceScatter_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1190.931,
+      "compute_overlap_us": 777.8447265625
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1538.567,
+      "compute_overlap_us": 778.203125
+    },
+    {
+      "kernel": "ncclDevKernel_ReduceScatter_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 2258.612,
+      "compute_overlap_us": 869.8994140625
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1543.56,
+      "compute_overlap_us": 385.6875
+    },
+    {
+      "kernel": "ncclDevKernel_ReduceScatter_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1628.629,
+      "compute_overlap_us": 305.4853515625
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1716.258,
+      "compute_overlap_us": 763.1826171875
+    },
+    {
+      "kernel": "ncclDevKernel_ReduceScatter_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 2030.513,
+      "compute_overlap_us": 911.2724609375
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1396.946,
+      "compute_overlap_us": 230.947265625
+    },
+    {
+      "kernel": "ncclDevKernel_ReduceScatter_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 2079.097,
+      "compute_overlap_us": 942.4443359375
+    },
+    {
+      "kernel": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 653.282,
+      "compute_overlap_us": 184.7978515625
+    },
+    {
+      "kernel": "ncclDevKernel_ReduceScatter_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 1693.631,
+      "compute_overlap_us": 526.287109375
+    },
+    {
+      "kernel": "ncclDevKernel_ReduceScatter_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 644.929,
+      "compute_overlap_us": 0
+    },
+    {
+      "kernel": "ncclDevKernel_AllReduce_Sum_f32_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 6.529,
+      "compute_overlap_us": 0
+    },
+    {
+      "kernel": "ncclDevKernel_AllReduce_Sum_f32_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+      "duration_us": 6.561,
+      "compute_overlap_us": 0
+    }
+  ],
+  "ranks": [
+    {
+      "rank": 0,
+      "identical": true,
+      "serial": [
+        {
+          "step": 1,
+          "loss": 31.578466415405273,
+          "hidden": "1bedd04162f17d910c44ff96e0c021374d75cf7cbb214a305ff6f2261b77178c",
+          "gradients": "02c127e7d6e1c2583c9cdaa39c3c43b4ea171b9e4ed598fbf738031e6071f410",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "b1e06f4bacfa2176b9e3f002705db7549c79b134309c6e0ea909574c5b69e8ab"
+        },
+        {
+          "step": 2,
+          "loss": 27.201171875,
+          "hidden": "1433b93c43c0c92953f4271b7bab8a4309c480575bb710a1f0e5bf175c35929d",
+          "gradients": "fb191db54fd16ae8bb900f84af0da13dd4e3bc42648c6fc37d20102a6c65e6d9",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "6ae8380087d956facd448229eb504e343c25f90635b1febc82f18c290f283e16"
+        },
+        {
+          "step": 3,
+          "loss": 19.55635643005371,
+          "hidden": "00b2d522b9c6785f2443a8b0742cfd0b5300d947d01dc8e29fc51944c112effc",
+          "gradients": "06a7700c7df16481c30fba39237bec3abd9d3f8931f4d685676212f27c65bd9f",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "9e670567b3a1b074fbdf200b97f4656199c0f004a361bdebce2440a55fb2e551"
+        }
+      ],
+      "overlap": [
+        {
+          "step": 1,
+          "loss": 31.578466415405273,
+          "hidden": "1bedd04162f17d910c44ff96e0c021374d75cf7cbb214a305ff6f2261b77178c",
+          "gradients": "02c127e7d6e1c2583c9cdaa39c3c43b4ea171b9e4ed598fbf738031e6071f410",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "b1e06f4bacfa2176b9e3f002705db7549c79b134309c6e0ea909574c5b69e8ab"
+        },
+        {
+          "step": 2,
+          "loss": 27.201171875,
+          "hidden": "1433b93c43c0c92953f4271b7bab8a4309c480575bb710a1f0e5bf175c35929d",
+          "gradients": "fb191db54fd16ae8bb900f84af0da13dd4e3bc42648c6fc37d20102a6c65e6d9",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "6ae8380087d956facd448229eb504e343c25f90635b1febc82f18c290f283e16"
+        },
+        {
+          "step": 3,
+          "loss": 19.55635643005371,
+          "hidden": "00b2d522b9c6785f2443a8b0742cfd0b5300d947d01dc8e29fc51944c112effc",
+          "gradients": "06a7700c7df16481c30fba39237bec3abd9d3f8931f4d685676212f27c65bd9f",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "9e670567b3a1b074fbdf200b97f4656199c0f004a361bdebce2440a55fb2e551"
+        }
+      ],
+      "windows": [
+        {
+          "overlap": false,
+          "step_ms": [
+            66.16199493408203,
+            65.181884765625,
+            65.71531677246094,
+            66.02182006835938,
+            65.5419921875,
+            65.55079650878906
+          ],
+          "peak_allocated_bytes": 18099955712
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.287601470947266,
+            58.027008056640625,
+            58.542808532714844,
+            58.03268814086914,
+            58.20210266113281,
+            58.80094528198242
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.196739196777344,
+            56.98943328857422,
+            58.39804458618164,
+            57.92292404174805,
+            57.76315689086914,
+            57.200218200683594
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": false,
+          "step_ms": [
+            66.23689270019531,
+            66.34506225585938,
+            67.20745086669922,
+            65.55445098876953,
+            65.9161376953125,
+            65.59700775146484
+          ],
+          "peak_allocated_bytes": 18099955712
+        }
+      ]
+    },
+    {
+      "rank": 1,
+      "identical": true,
+      "serial": [
+        {
+          "step": 1,
+          "loss": 31.743349075317383,
+          "hidden": "f8360d412fd5ea143a4b3d39f6170f37fb13f2ec82b1a63586be7b3d43c406ef",
+          "gradients": "487b4c74523d710a78b4b616e90750a591c833460c314e11ece9ca556c652e92",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "919248c5411698d990b1dc5603dc54bb1ac2abcaccc72a135fdb31a39e5c24a2"
+        },
+        {
+          "step": 2,
+          "loss": 27.2082576751709,
+          "hidden": "2826f540b45e992617108f24a5ea1b14aa5cd855e93dfd3ce88ac4aaf5bd0145",
+          "gradients": "9ef8cec30a10ecaf4fa2600ca2daecfbecd2d461bab83da59e833e4eeb582acf",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "708689965ce055c2b27d82ac9b2d6e456255c540757556b394213e2c9fb0fb72"
+        },
+        {
+          "step": 3,
+          "loss": 19.439075469970703,
+          "hidden": "58b2d02e153d3b70fac04382dbe2e1c46f688b1034c61995c2a74e1323dc5151",
+          "gradients": "f7408ffe7af65ceed29742971a90835dd0782c230a57c725f6719f776ab538e9",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "30043de2a70ea5c47321eff2ff1a58583d3aa8a3fcce7854d4a0ac0a834458c9"
+        }
+      ],
+      "overlap": [
+        {
+          "step": 1,
+          "loss": 31.743349075317383,
+          "hidden": "f8360d412fd5ea143a4b3d39f6170f37fb13f2ec82b1a63586be7b3d43c406ef",
+          "gradients": "487b4c74523d710a78b4b616e90750a591c833460c314e11ece9ca556c652e92",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "919248c5411698d990b1dc5603dc54bb1ac2abcaccc72a135fdb31a39e5c24a2"
+        },
+        {
+          "step": 2,
+          "loss": 27.2082576751709,
+          "hidden": "2826f540b45e992617108f24a5ea1b14aa5cd855e93dfd3ce88ac4aaf5bd0145",
+          "gradients": "9ef8cec30a10ecaf4fa2600ca2daecfbecd2d461bab83da59e833e4eeb582acf",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "708689965ce055c2b27d82ac9b2d6e456255c540757556b394213e2c9fb0fb72"
+        },
+        {
+          "step": 3,
+          "loss": 19.439075469970703,
+          "hidden": "58b2d02e153d3b70fac04382dbe2e1c46f688b1034c61995c2a74e1323dc5151",
+          "gradients": "f7408ffe7af65ceed29742971a90835dd0782c230a57c725f6719f776ab538e9",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "30043de2a70ea5c47321eff2ff1a58583d3aa8a3fcce7854d4a0ac0a834458c9"
+        }
+      ],
+      "windows": [
+        {
+          "overlap": false,
+          "step_ms": [
+            66.16199493408203,
+            65.181884765625,
+            65.71531677246094,
+            66.02182006835938,
+            65.5419921875,
+            65.55079650878906
+          ],
+          "peak_allocated_bytes": 18099955712
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.287601470947266,
+            58.027008056640625,
+            58.542808532714844,
+            58.03268814086914,
+            58.20210266113281,
+            58.80094528198242
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.196739196777344,
+            56.98943328857422,
+            58.39804458618164,
+            57.92292404174805,
+            57.76315689086914,
+            57.200218200683594
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": false,
+          "step_ms": [
+            66.23689270019531,
+            66.34506225585938,
+            67.20745086669922,
+            65.55445098876953,
+            65.9161376953125,
+            65.59700775146484
+          ],
+          "peak_allocated_bytes": 18099955712
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "identical": true,
+      "serial": [
+        {
+          "step": 1,
+          "loss": 31.645401000976562,
+          "hidden": "b4c9237dc5a7eb378db025ba1cbb26ce58026ee783438ac085b1c8cf6ff8626b",
+          "gradients": "8d4c50604b5b5a732b46c5475d7a60fb9cb0b479e0884f4424e4103bc67ca40b",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "1394d7f056e757014c832cce076ea5fd597dcdbcb828bd329cc747622e4ce6ff"
+        },
+        {
+          "step": 2,
+          "loss": 28.08382225036621,
+          "hidden": "d08b8e3fb1a5da07c46a53b46c554aa7fdf45cb15eb5adfd83a96a13e65024e9",
+          "gradients": "b0a015ffdf37d5560d905cf68a79960ca73fa10b31d4bcb88d5b3e2d73aaca62",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "e0cbd3c31d21a542ad5a85616f65fd0b98d9140b3cfdea0e208dba2dc53fe680"
+        },
+        {
+          "step": 3,
+          "loss": 21.508337020874023,
+          "hidden": "1fe0acde2ee6aeaae28b9f2d216bdb28dbfe4a038f8aa933a02859d6c749eea8",
+          "gradients": "04d05b9183587cbabe8f1206b42e4385332ac703ef9f630f386345f658106e8d",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "44bfed55b9e5b6a908ce15b951eff426c6c197b87f99e82833a4275d8d87a889"
+        }
+      ],
+      "overlap": [
+        {
+          "step": 1,
+          "loss": 31.645401000976562,
+          "hidden": "b4c9237dc5a7eb378db025ba1cbb26ce58026ee783438ac085b1c8cf6ff8626b",
+          "gradients": "8d4c50604b5b5a732b46c5475d7a60fb9cb0b479e0884f4424e4103bc67ca40b",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "1394d7f056e757014c832cce076ea5fd597dcdbcb828bd329cc747622e4ce6ff"
+        },
+        {
+          "step": 2,
+          "loss": 28.08382225036621,
+          "hidden": "d08b8e3fb1a5da07c46a53b46c554aa7fdf45cb15eb5adfd83a96a13e65024e9",
+          "gradients": "b0a015ffdf37d5560d905cf68a79960ca73fa10b31d4bcb88d5b3e2d73aaca62",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "e0cbd3c31d21a542ad5a85616f65fd0b98d9140b3cfdea0e208dba2dc53fe680"
+        },
+        {
+          "step": 3,
+          "loss": 21.508337020874023,
+          "hidden": "1fe0acde2ee6aeaae28b9f2d216bdb28dbfe4a038f8aa933a02859d6c749eea8",
+          "gradients": "04d05b9183587cbabe8f1206b42e4385332ac703ef9f630f386345f658106e8d",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "44bfed55b9e5b6a908ce15b951eff426c6c197b87f99e82833a4275d8d87a889"
+        }
+      ],
+      "windows": [
+        {
+          "overlap": false,
+          "step_ms": [
+            66.16199493408203,
+            65.181884765625,
+            65.71531677246094,
+            66.02182006835938,
+            65.5419921875,
+            65.55079650878906
+          ],
+          "peak_allocated_bytes": 18099955712
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.287601470947266,
+            58.027008056640625,
+            58.542808532714844,
+            58.03268814086914,
+            58.20210266113281,
+            58.80094528198242
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.196739196777344,
+            56.98943328857422,
+            58.39804458618164,
+            57.92292404174805,
+            57.76315689086914,
+            57.200218200683594
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": false,
+          "step_ms": [
+            66.23689270019531,
+            66.34506225585938,
+            67.20745086669922,
+            65.55445098876953,
+            65.9161376953125,
+            65.59700775146484
+          ],
+          "peak_allocated_bytes": 18099955712
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "identical": true,
+      "serial": [
+        {
+          "step": 1,
+          "loss": 31.461959838867188,
+          "hidden": "db197b4ba7a16f4308b9181725ea2a7f07317e6345f46653ba19dc41fa284fff",
+          "gradients": "65894f55fa805602b04efd81a70bed817d2d4d394ad10b28cc978b0a5f750a8d",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "6b70bb8b16b223ea147f40387c59f1fbb54aee51be620bb3b4cb601f730b3253"
+        },
+        {
+          "step": 2,
+          "loss": 27.391613006591797,
+          "hidden": "8e9655337b6569ee023483c0b9800e5e3c9b0ce5f1c2fd61f16e0480bac85e82",
+          "gradients": "1ba8f88efb8b88e976dac36bb27fab96535071917704b080af689c0908df2664",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "73cc8dffa1304c793902463c7ba4dd0f10e496682b8faa8b678d4a6ebfe8d623"
+        },
+        {
+          "step": 3,
+          "loss": 19.460084915161133,
+          "hidden": "b2e32001afc4df00a2ad686b8b1a996bbb61acfb6597f1e1430aa6073846f579",
+          "gradients": "013c2eab13878a6e866406b4e2206915b9404bfe991f522b390da9709e32cbfb",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "d73531cd4b27d1f3760ee0566257449b22dadda216cd6f254564ab6f9150edf5"
+        }
+      ],
+      "overlap": [
+        {
+          "step": 1,
+          "loss": 31.461959838867188,
+          "hidden": "db197b4ba7a16f4308b9181725ea2a7f07317e6345f46653ba19dc41fa284fff",
+          "gradients": "65894f55fa805602b04efd81a70bed817d2d4d394ad10b28cc978b0a5f750a8d",
+          "optimizer": {
+            "grad_norm": 178.65670776367188,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "6b70bb8b16b223ea147f40387c59f1fbb54aee51be620bb3b4cb601f730b3253"
+        },
+        {
+          "step": 2,
+          "loss": 27.391613006591797,
+          "hidden": "8e9655337b6569ee023483c0b9800e5e3c9b0ce5f1c2fd61f16e0480bac85e82",
+          "gradients": "1ba8f88efb8b88e976dac36bb27fab96535071917704b080af689c0908df2664",
+          "optimizer": {
+            "grad_norm": 121.69405364990234,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "73cc8dffa1304c793902463c7ba4dd0f10e496682b8faa8b678d4a6ebfe8d623"
+        },
+        {
+          "step": 3,
+          "loss": 19.460084915161133,
+          "hidden": "b2e32001afc4df00a2ad686b8b1a996bbb61acfb6597f1e1430aa6073846f579",
+          "gradients": "013c2eab13878a6e866406b4e2206915b9404bfe991f522b390da9709e32cbfb",
+          "optimizer": {
+            "grad_norm": 100.2919921875,
+            "updated": true,
+            "denominator": 116.56845092773438
+          },
+          "state": "d73531cd4b27d1f3760ee0566257449b22dadda216cd6f254564ab6f9150edf5"
+        }
+      ],
+      "windows": [
+        {
+          "overlap": false,
+          "step_ms": [
+            66.16199493408203,
+            65.181884765625,
+            65.71531677246094,
+            66.02182006835938,
+            65.5419921875,
+            65.55079650878906
+          ],
+          "peak_allocated_bytes": 18099955712
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.287601470947266,
+            58.027008056640625,
+            58.542808532714844,
+            58.03268814086914,
+            58.20210266113281,
+            58.80094528198242
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": true,
+          "step_ms": [
+            58.196739196777344,
+            56.98943328857422,
+            58.39804458618164,
+            57.92292404174805,
+            57.76315689086914,
+            57.200218200683594
+          ],
+          "peak_allocated_bytes": 17286234624
+        },
+        {
+          "overlap": false,
+          "step_ms": [
+            66.23689270019531,
+            66.34506225585938,
+            67.20745086669922,
+            65.55445098876953,
+            65.9161376953125,
+            65.59700775146484
+          ],
+          "peak_allocated_bytes": 18099955712
+        }
+      ]
+    }
+  ],
+  "topology": "\t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nFailed to run topology matrix\n\nGPU 0: NVIDIA H100 80GB HBM3 (UUID: GPU-d6a8b007-a0e1-4c71-8d37-94b615b0bf49)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 1: NVIDIA H100 80GB HBM3 (UUID: GPU-7e59b1c3-1318-7294-0dce-54cb462bea4a)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 2: NVIDIA H100 80GB HBM3 (UUID: GPU-ea24989a-7f5d-7f66-cef6-6b49059ff06b)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 3: NVIDIA H100 80GB HBM3 (UUID: GPU-4b6691d8-5688-8dc2-5916-75390225f4e9)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 4: NVIDIA H100 80GB HBM3 (UUID: GPU-5c230dd9-cbc1-ebb9-8a5f-f624ab19750b)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 5: NVIDIA H100 80GB HBM3 (UUID: GPU-6b8db854-cb05-c6a0-4607-1bba886011b7)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 6: NVIDIA H100 80GB HBM3 (UUID: GPU-4c79fb06-f2bc-4575-17a4-b58953f3cc89)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 7: NVIDIA H100 80GB HBM3 (UUID: GPU-947dabc5-0a86-e531-241e-6fea5c175d13)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\n",
+  "devices": [
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3"
+  ],
+  "peer_access": [
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  ],
+  "source_sha256": {
+    "experiments/__init__.py": "f1ba69ee6dd7e2a783d9e6e5a60f1f4ded7f420a0154fde8442e7eec1bcb05e1",
+    "experiments/compare.py": "f79a0bbcafd746cd4a020b3f38a506c18af7ea24dcd50c73c358bcf9316ba5ae",
+    "experiments/overlap.py": "a9459acb72461bc011347dfc408551881569e9afa9402568b94fe7e10240e7d5",
+    "experiments/reference.py": "2058ade4804615a88a7ed97d8be105f05b4c433ad1fa14f74905a2a6dcace107",
+    "nanospec/__init__.py": "0a182cad24ea5a72cb6b2849058150edc38138cb6d5d2042aed2b81d7f9d6566",
+    "nanospec/checkpoint.py": "9870370ad5b8123a883aa927c2b588e9fc6291a8cd5c4077b6ccc863d2bfff72",
+    "nanospec/config.py": "2940522b9559cdcdb761cbd710074c872a87855f6c781ea87af2377ed21d31ae",
+    "nanospec/distributed.py": "a9b6f42a8b3f24c51de8b6e8840b12b0a94e78f1148922069f54a3211533443d",
+    "nanospec/dspark.py": "fbdff29c5015215201a21081a56954996e91b0d650266f472ef75868df7a55b1",
+    "nanospec/layers.py": "1434dde7a04cf368a4d9a58ac6c6adbf1d97db1e38b17e4725f2bc7cd835e834",
+    "nanospec/objective.py": "d7d385b4b4c3a79619a78d1f3fdee934cbd3fe306055b024d4d7949c3e8f7054",
+    "nanospec/ops.py": "441fc3f40a0b6b2847277e587e37c3640c3c388619b0be3dd1f14fc5ac83cf8d",
+    "nanospec/qwen.py": "2f731ac1d356cef623e7e2b4029843a7463a70aa89f4825041c3fd1b04379d7f",
+    "nanospec/shard.py": "3ed58f119d28b7017df562ca82e614a293699c4524d847b36f7b005b36c7bdf0",
+    "nanospec/train.py": "b51c559085e058fbeadef2589b13eede78a012f0a9db0c4b83210b97dbc644f2"
+  },
+  "nccl_topology": "<system version=\"1\">\n  <cpu host_hash=\"0x9ef8032a590f60c0\" numaid=\"-1\" arch=\"x86_64\" vendor=\"AuthenticAMD\" familyid=\"175\" modelid=\"1\">\n    <pci busid=\"0000:53:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"0\" sm=\"90\" rank=\"0\" gdr=\"1\">\n        <nvlink target=\"0000:d0:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d2:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d1:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:cf:00.0\" count=\"4\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <nic>\n      <net name=\"eth0\" dev=\"0\" latency=\"0\" speed=\"10000\" port=\"0\" guid=\"0x0\" maxconn=\"65536\" gdr=\"0\"/>\n    </nic>\n    <pci busid=\"0000:64:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"1\" sm=\"90\" rank=\"1\" gdr=\"1\">\n        <nvlink target=\"0000:d0:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d1:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d2:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:cf:00.0\" count=\"4\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <pci busid=\"0000:75:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"2\" sm=\"90\" rank=\"2\" gdr=\"1\">\n        <nvlink target=\"0000:d1:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d2:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:cf:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d0:00.0\" count=\"5\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <pci busid=\"0000:86:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"3\" sm=\"90\" rank=\"3\" gdr=\"1\">\n        <nvlink target=\"0000:d0:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d2:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:d1:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:cf:00.0\" count=\"4\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n  </cpu>\n</system>\n"
+}

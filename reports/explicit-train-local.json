@@ -1,0 +1,99 @@
+{
+  "passed": true,
+  "device": "NVIDIA GeForce RTX 3060",
+  "draft_replays": [
+    {
+      "case": "torch.float32/default",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "case": "torch.float32/teacher_logits",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "case": "torch.float32/no_feature_norm",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "case": "torch.float32/no_markov",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "case": "torch.bfloat16/default",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "case": "torch.bfloat16/teacher_logits",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "case": "torch.bfloat16/no_feature_norm",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "case": "torch.bfloat16/no_markov",
+      "steps": 3,
+      "maximum_absolute_difference": 0.0
+    }
+  ],
+  "compared_tensors": [
+    "loss",
+    "hidden states",
+    "raw gradients",
+    "parameters",
+    "FP32 masters",
+    "first moment",
+    "second moment"
+  ],
+  "verifier": {
+    "rows": 2,
+    "sequence_length": 70,
+    "fp8_layers": 4,
+    "maximum_absolute_differences": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "integrated_optimizer_and_checkpoint_resume": {
+    "steps": 3,
+    "resumed_after_step": 1,
+    "maximum_absolute_difference": 0.0
+  },
+  "source_sha256": {
+    "nanospec/__init__.py": "0a182cad24ea5a72cb6b2849058150edc38138cb6d5d2042aed2b81d7f9d6566",
+    "nanospec/checkpoint.py": "9870370ad5b8123a883aa927c2b588e9fc6291a8cd5c4077b6ccc863d2bfff72",
+    "nanospec/config.py": "2940522b9559cdcdb761cbd710074c872a87855f6c781ea87af2377ed21d31ae",
+    "nanospec/distributed.py": "a9b6f42a8b3f24c51de8b6e8840b12b0a94e78f1148922069f54a3211533443d",
+    "nanospec/dspark.py": "1b4cecdc03cbce519e15823ca6afa715ae640a060d70910313c749e156ad5f5c",
+    "nanospec/layers.py": "1434dde7a04cf368a4d9a58ac6c6adbf1d97db1e38b17e4725f2bc7cd835e834",
+    "nanospec/objective.py": "d7d385b4b4c3a79619a78d1f3fdee934cbd3fe306055b024d4d7949c3e8f7054",
+    "nanospec/ops.py": "441fc3f40a0b6b2847277e587e37c3640c3c388619b0be3dd1f14fc5ac83cf8d",
+    "nanospec/qwen.py": "2f731ac1d356cef623e7e2b4029843a7463a70aa89f4825041c3fd1b04379d7f",
+    "nanospec/shard.py": "da90e1c2a4bb541536378affa02ce7ee7078249f195de4f5016ec22e86f31065",
+    "nanospec/train.py": "7c46ad3b9ddc9f7d19a551d709d9e8de01469221c1b95e1e589a2fa0c7897079",
+    "experiments/__init__.py": "f1ba69ee6dd7e2a783d9e6e5a60f1f4ded7f420a0154fde8442e7eec1bcb05e1",
+    "experiments/compare.py": "f79a0bbcafd746cd4a020b3f38a506c18af7ea24dcd50c73c358bcf9316ba5ae",
+    "experiments/reference.py": "2058ade4804615a88a7ed97d8be105f05b4c433ad1fa14f74905a2a6dcace107"
+  }
+}

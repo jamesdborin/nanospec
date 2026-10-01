@@ -1,0 +1,435 @@
+{
+  "passed": true,
+  "tolerances": {
+    "loss_relative": 0.02,
+    "gradient_cosine": 0.98,
+    "gradient_relative_l2": 0.2,
+    "draft_hidden_cosine": 0.99,
+    "teacher_hidden_cosine": 0.99,
+    "parameter_relative_l2": 0.003,
+    "parameter_max_abs": 0.01
+  },
+  "torchspec_revision": "076a738fdd7e64be1495338f055e8188784633c4",
+  "torch": "2.10.0+cu128",
+  "transformers": "5.3.0",
+  "config": {
+    "hidden_size": 5120,
+    "intermediate_size": 1024,
+    "num_hidden_layers": 1,
+    "num_attention_heads": 8,
+    "num_key_value_heads": 2,
+    "head_dim": 128,
+    "vocab_size": 248320,
+    "target_hidden_size": 5120,
+    "target_num_hidden_layers": 64,
+    "num_target_layers": 5,
+    "target_layer_ids": [
+      1,
+      16,
+      31,
+      46,
+      61
+    ],
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 10000000.0,
+    "max_position_embeddings": 262144,
+    "mask_token_id": 248063,
+    "markov_rank": 32,
+    "markov_head_type": "vanilla",
+    "enable_confidence_head": true,
+    "confidence_head_with_markov": true,
+    "fc_norm": false,
+    "tie_word_embeddings": false
+  },
+  "objective": {
+    "block_size": 7,
+    "num_anchors": 2,
+    "gamma": 4.0,
+    "ce": 0.1,
+    "l1": 0.9,
+    "kl": 0.0,
+    "confidence": 1.0
+  },
+  "target": "Qwen/Qwen3.5-27B-FP8",
+  "target_revision": "709d2d2a46f204254221f583f45e00f93b578c9e",
+  "dtype": "bfloat16",
+  "learning_rate": 1e-05,
+  "train_gpus": 2,
+  "seed": 42,
+  "sequence_length": 32,
+  "data": "fixed random token IDs; unequal rank supervision masks",
+  "initial_checkpoint": "/artifacts/full-qwen-parity-2-bfloat16-torchspec-H200-initial.pt",
+  "ranks": [
+    {
+      "rank": 0,
+      "passed": true,
+      "steps": [
+        {
+          "step": 1,
+          "nanospec_loss": 3.9145801067352295,
+          "torchspec_loss": 3.9164962768554688,
+          "draft_hidden": {
+            "cosine_mean": 0.9996958374977112,
+            "cosine_min": 0.9995843172073364,
+            "relative_l2": 0.024668274447321892,
+            "max_abs": 0.14111328125
+          },
+          "gradients": {
+            "cosine": 0.9995829590157423,
+            "relative_l2": 0.028960211480361406,
+            "max_abs": 0.25,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999985819354,
+            "relative_l2": 5.3255321596831784e-05,
+            "max_abs": 3.0517578125e-05,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 71.66169738769531,
+          "torchspec_grad_norm": 71.53495788574219
+        },
+        {
+          "step": 2,
+          "nanospec_loss": 3.5507376194000244,
+          "torchspec_loss": 3.553140640258789,
+          "draft_hidden": {
+            "cosine_mean": 0.9997081756591797,
+            "cosine_min": 0.999618411064148,
+            "relative_l2": 0.024162113666534424,
+            "max_abs": 0.132080078125
+          },
+          "gradients": {
+            "cosine": 0.9993195615767537,
+            "relative_l2": 0.03752959788996861,
+            "max_abs": 0.21875,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999926172661,
+            "relative_l2": 0.00012151323911312977,
+            "max_abs": 6.103515625e-05,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 44.82729721069336,
+          "torchspec_grad_norm": 44.548702239990234
+        },
+        {
+          "step": 3,
+          "nanospec_loss": 3.335831642150879,
+          "torchspec_loss": 3.3365297317504883,
+          "draft_hidden": {
+            "cosine_mean": 0.9997007846832275,
+            "cosine_min": 0.9995852708816528,
+            "relative_l2": 0.02446727082133293,
+            "max_abs": 0.12841796875
+          },
+          "gradients": {
+            "cosine": 0.9996834014428103,
+            "relative_l2": 0.025186152474623708,
+            "max_abs": 0.0546875,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999910256542,
+            "relative_l2": 0.0001339727255404638,
+            "max_abs": 6.103515625e-05,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 19.743879318237305,
+          "torchspec_grad_norm": 19.77203941345215
+        }
+      ],
+      "teacher": [
+        {
+          "layer": 1,
+          "cosine_mean": 0.9999590516090393,
+          "cosine_min": 0.999819278717041,
+          "relative_l2": 0.009833980351686478,
+          "max_abs": 0.25
+        },
+        {
+          "layer": 16,
+          "cosine_mean": 0.9996921420097351,
+          "cosine_min": 0.9995158910751343,
+          "relative_l2": 0.025546899065375328,
+          "max_abs": 1.0
+        },
+        {
+          "layer": 31,
+          "cosine_mean": 0.9992510080337524,
+          "cosine_min": 0.9985916018486023,
+          "relative_l2": 0.0368933267891407,
+          "max_abs": 1.0
+        },
+        {
+          "layer": 46,
+          "cosine_mean": 0.9993252158164978,
+          "cosine_min": 0.9985648989677429,
+          "relative_l2": 0.035989414900541306,
+          "max_abs": 1.5
+        },
+        {
+          "layer": 61,
+          "cosine_mean": 0.9991368055343628,
+          "cosine_min": 0.99611896276474,
+          "relative_l2": 0.03997468203306198,
+          "max_abs": 6.5
+        },
+        {
+          "layer": "final_norm",
+          "cosine_mean": 0.999055027961731,
+          "cosine_min": 0.9955687522888184,
+          "relative_l2": 0.0447494313120842,
+          "max_abs": 1.6875
+        },
+        {
+          "layer": "logits",
+          "cosine_mean": 0.9997173547744751,
+          "cosine_min": 0.9987238645553589,
+          "relative_l2": 0.023999467492103577,
+          "max_abs": 1.15625
+        }
+      ]
+    },
+    {
+      "rank": 1,
+      "passed": true,
+      "steps": [
+        {
+          "step": 1,
+          "nanospec_loss": 3.9145801067352295,
+          "torchspec_loss": 3.9164962768554688,
+          "draft_hidden": {
+            "cosine_mean": 0.9994293451309204,
+            "cosine_min": 0.9990634918212891,
+            "relative_l2": 0.03378699719905853,
+            "max_abs": 0.1796875
+          },
+          "gradients": {
+            "cosine": 0.9995829590157423,
+            "relative_l2": 0.028960211480361406,
+            "max_abs": 0.25,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999985819354,
+            "relative_l2": 5.3255321596831784e-05,
+            "max_abs": 3.0517578125e-05,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 71.66169738769531,
+          "torchspec_grad_norm": 71.53495788574219
+        },
+        {
+          "step": 2,
+          "nanospec_loss": 3.5507376194000244,
+          "torchspec_loss": 3.553140640258789,
+          "draft_hidden": {
+            "cosine_mean": 0.9994198083877563,
+            "cosine_min": 0.9990184903144836,
+            "relative_l2": 0.03406566381454468,
+            "max_abs": 0.19140625
+          },
+          "gradients": {
+            "cosine": 0.9993195615767537,
+            "relative_l2": 0.03752959788996861,
+            "max_abs": 0.21875,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999926172661,
+            "relative_l2": 0.00012151323911312977,
+            "max_abs": 6.103515625e-05,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 44.82729721069336,
+          "torchspec_grad_norm": 44.548702239990234
+        },
+        {
+          "step": 3,
+          "nanospec_loss": 3.335831642150879,
+          "torchspec_loss": 3.3365297317504883,
+          "draft_hidden": {
+            "cosine_mean": 0.9993990063667297,
+            "cosine_min": 0.9989348649978638,
+            "relative_l2": 0.03467075899243355,
+            "max_abs": 0.1962890625
+          },
+          "gradients": {
+            "cosine": 0.9996834014428103,
+            "relative_l2": 0.025186152474623708,
+            "max_abs": 0.0546875,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999910256542,
+            "relative_l2": 0.0001339727255404638,
+            "max_abs": 6.103515625e-05,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 19.743879318237305,
+          "torchspec_grad_norm": 19.77203941345215
+        }
+      ],
+      "teacher": [
+        {
+          "layer": 1,
+          "cosine_mean": 0.99996018409729,
+          "cosine_min": 0.9999215602874756,
+          "relative_l2": 0.009655332192778587,
+          "max_abs": 0.25
+        },
+        {
+          "layer": 16,
+          "cosine_mean": 0.9996787905693054,
+          "cosine_min": 0.999269962310791,
+          "relative_l2": 0.02584056369960308,
+          "max_abs": 1.0
+        },
+        {
+          "layer": 31,
+          "cosine_mean": 0.9991772174835205,
+          "cosine_min": 0.9967460632324219,
+          "relative_l2": 0.03773971274495125,
+          "max_abs": 1.0
+        },
+        {
+          "layer": 46,
+          "cosine_mean": 0.9993770122528076,
+          "cosine_min": 0.9987685680389404,
+          "relative_l2": 0.03461223095655441,
+          "max_abs": 1.5
+        },
+        {
+          "layer": 61,
+          "cosine_mean": 0.99927818775177,
+          "cosine_min": 0.997194230556488,
+          "relative_l2": 0.036831438541412354,
+          "max_abs": 4.0
+        },
+        {
+          "layer": "final_norm",
+          "cosine_mean": 0.9992212653160095,
+          "cosine_min": 0.9969155192375183,
+          "relative_l2": 0.040292222052812576,
+          "max_abs": 1.5625
+        },
+        {
+          "layer": "logits",
+          "cosine_mean": 0.9997990131378174,
+          "cosine_min": 0.9985862970352173,
+          "relative_l2": 0.019188392907381058,
+          "max_abs": 0.875
+        }
+      ]
+    }
+  ],
+  "topology": "\t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nFailed to run topology matrix\n\nGPU 0: NVIDIA H200 (UUID: GPU-e46e7c33-aa51-3e57-7020-7e2cb5781033)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 1: NVIDIA H200 (UUID: GPU-f5e06979-7f62-44df-ebc1-03336dc4c4f9)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 2: NVIDIA H200 (UUID: GPU-3c6d41ea-6542-7d0d-91e2-e0dd400c12a8)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 3: NVIDIA H200 (UUID: GPU-ac3dd7ce-57fc-1d54-cbec-ce694708ca7a)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 4: NVIDIA H200 (UUID: GPU-cae95e6c-2a90-65e3-2556-afd92af81825)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 5: NVIDIA H200 (UUID: GPU-4cb7fbb5-cfce-bc3f-694d-67da26ea8c66)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 6: NVIDIA H200 (UUID: GPU-e4366fe7-27ac-1a71-48ce-0f35ac9c3109)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 7: NVIDIA H200 (UUID: GPU-d8860a3a-5a67-69d1-5c02-96b2b3028546)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\n",
+  "devices": [
+    "NVIDIA H200",
+    "NVIDIA H200",
+    "NVIDIA H200",
+    "NVIDIA H200",
+    "NVIDIA H200",
+    "NVIDIA H200",
+    "NVIDIA H200",
+    "NVIDIA H200"
+  ],
+  "peer_access": [
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  ],
+  "source_sha256": {
+    "experiments/__init__.py": "f1ba69ee6dd7e2a783d9e6e5a60f1f4ded7f420a0154fde8442e7eec1bcb05e1",
+    "experiments/compare.py": "11e787ee8e805b89100597189cd0e789549b67e4b259b7c265de13c935e4858c",
+    "nanospec/__init__.py": "0a182cad24ea5a72cb6b2849058150edc38138cb6d5d2042aed2b81d7f9d6566",
+    "nanospec/checkpoint.py": "c2c466dfdc339c0e2038cc25328c8a5b416a863db78439ef4de3bdbb27b819e1",
+    "nanospec/config.py": "2694a1069866f6e78324df9ba5eaf019e50d425bd3435c36ef980eec5911bc2a",
+    "nanospec/distributed.py": "cf5250199222fc1acceff67681c4ba270169af9d10c3a64d17d05427b1ed38b8",
+    "nanospec/dspark.py": "3a949fc8481ca025c0910f385328f548ad978c8702655555a5324da498e77ba6",
+    "nanospec/ops.py": "e8027508ad3de7165c55b599f2bfb4e032497326c849dc4d234920c63db5621f",
+    "nanospec/qwen.py": "d8fc7be057e070fc3a4e08ce221a21ddc26a8f5bec907bd949e47b01b8eb709d",
+    "nanospec/shard.py": "9f27da66abe6237cf4e2139c3db4971d15baf5437901796ca91c907581bb8fdc",
+    "nanospec/train.py": "6d9415835c5172330cfc62b131670723931fb39d9a3b91c8f6efa5ff30e47f08"
+  },
+  "nccl_topology": "<system version=\"1\">\n  <cpu host_hash=\"0xdf40698301d80ab\" numaid=\"-1\" arch=\"x86_64\" vendor=\"GenuineIntel\" familyid=\"6\" modelid=\"143\">\n    <pci busid=\"0000:0f:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"0\" sm=\"90\" rank=\"0\" gdr=\"1\">\n        <nvlink target=\"0000:1c:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:1b:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:1a:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:1d:00.0\" count=\"4\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <nic>\n      <net name=\"eth0\" dev=\"0\" latency=\"0\" speed=\"10000\" port=\"0\" guid=\"0x0\" maxconn=\"65536\" gdr=\"0\"/>\n    </nic>\n    <pci busid=\"0000:2d:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"1\" sm=\"90\" rank=\"1\" gdr=\"1\">\n        <nvlink target=\"0000:1d:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:1b:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:1c:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:1a:00.0\" count=\"4\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n  </cpu>\n</system>\n"
+}

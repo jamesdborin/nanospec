@@ -1,0 +1,496 @@
+{
+  "passed": true,
+  "tolerances": {
+    "loss_relative": 0.02,
+    "gradient_cosine": 0.995,
+    "gradient_relative_l2": 0.06,
+    "draft_hidden_cosine": 0.99,
+    "teacher_hidden_cosine": 0.99,
+    "parameter_relative_l2": 0.003,
+    "parameter_max_abs": 0.01
+  },
+  "torchspec_revision": "076a738fdd7e64be1495338f055e8188784633c4",
+  "reference_objective": "independent autograd CE + KL on TorchSpec components",
+  "torch": "2.10.0+cu128",
+  "transformers": "5.3.0",
+  "config": {
+    "hidden_size": 64,
+    "intermediate_size": 128,
+    "num_hidden_layers": 2,
+    "num_attention_heads": 4,
+    "num_key_value_heads": 2,
+    "head_dim": 16,
+    "vocab_size": 128,
+    "target_hidden_size": 64,
+    "target_num_hidden_layers": 8,
+    "num_target_layers": 2,
+    "target_layer_ids": [
+      1,
+      5
+    ],
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 10000.0,
+    "max_position_embeddings": 256,
+    "mask_token_id": 127,
+    "markov_rank": 16,
+    "markov_head_type": "vanilla",
+    "fc_norm": true,
+    "tie_word_embeddings": false
+  },
+  "objective": {
+    "block_size": 7,
+    "num_anchors": 2,
+    "gamma": 4.0,
+    "ce": 0.1,
+    "kl": 0.9
+  },
+  "target": "fixed synthetic hidden states",
+  "target_revision": null,
+  "dtype": "bfloat16",
+  "learning_rate": 0.0003,
+  "train_gpus": 4,
+  "seed": 42,
+  "sequence_length": 32,
+  "data": "fixed random token IDs; unequal rank supervision masks",
+  "initial_checkpoint": "/artifacts/draft-tiny-4-bfloat16-ce-kl-H100-initial.pt",
+  "ranks": [
+    {
+      "rank": 0,
+      "passed": true,
+      "steps": [
+        {
+          "step": 1,
+          "nanospec_loss": 1.0700260400772095,
+          "torchspec_loss": 1.0700621604919434,
+          "draft_hidden": {
+            "cosine_mean": 0.9999986290931702,
+            "cosine_min": 0.9999951124191284,
+            "relative_l2": 0.001717852079309523,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999849572193966,
+            "relative_l2": 0.005505370990562261,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.999999972779544,
+            "relative_l2": 0.0002333259573408951,
+            "max_abs": 0.0006103515625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.44889041781425476,
+          "torchspec_grad_norm": 0.4491232931613922
+        },
+        {
+          "step": 2,
+          "nanospec_loss": 1.0519366264343262,
+          "torchspec_loss": 1.051970362663269,
+          "draft_hidden": {
+            "cosine_mean": 0.9999974370002747,
+            "cosine_min": 0.9999939799308777,
+            "relative_l2": 0.002275998005643487,
+            "max_abs": 0.0234375
+          },
+          "gradients": {
+            "cosine": 0.9999789022074383,
+            "relative_l2": 0.006495922729932514,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "layers.0.self_attn.k_proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999601989253,
+            "relative_l2": 0.00028213864654743763,
+            "max_abs": 0.000885009765625,
+            "worst_parameter": "layers.0.mlp.gate_proj.weight"
+          },
+          "nanospec_grad_norm": 0.40192362666130066,
+          "torchspec_grad_norm": 0.40190786123275757
+        },
+        {
+          "step": 3,
+          "nanospec_loss": 1.0339181423187256,
+          "torchspec_loss": 1.0340486764907837,
+          "draft_hidden": {
+            "cosine_mean": 0.9999972581863403,
+            "cosine_min": 0.9999913573265076,
+            "relative_l2": 0.0024042774457484484,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999726353560278,
+            "relative_l2": 0.007400051031166624,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999507974396,
+            "relative_l2": 0.00031369616825886894,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.3735524117946625,
+          "torchspec_grad_norm": 0.37364649772644043
+        }
+      ],
+      "teacher": []
+    },
+    {
+      "rank": 1,
+      "passed": true,
+      "steps": [
+        {
+          "step": 1,
+          "nanospec_loss": 1.0700260400772095,
+          "torchspec_loss": 1.0700621604919434,
+          "draft_hidden": {
+            "cosine_mean": 0.9999979138374329,
+            "cosine_min": 0.9999962449073792,
+            "relative_l2": 0.0020752588752657175,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999849572193966,
+            "relative_l2": 0.005505370990562261,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.999999972779544,
+            "relative_l2": 0.0002333259573408951,
+            "max_abs": 0.0006103515625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.44889041781425476,
+          "torchspec_grad_norm": 0.4491232931613922
+        },
+        {
+          "step": 2,
+          "nanospec_loss": 1.0519366264343262,
+          "torchspec_loss": 1.051970362663269,
+          "draft_hidden": {
+            "cosine_mean": 0.999996542930603,
+            "cosine_min": 0.9999915361404419,
+            "relative_l2": 0.0026575138326734304,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999789022074383,
+            "relative_l2": 0.006495922729932514,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "layers.0.self_attn.k_proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999601989253,
+            "relative_l2": 0.00028213864654743763,
+            "max_abs": 0.000885009765625,
+            "worst_parameter": "layers.0.mlp.gate_proj.weight"
+          },
+          "nanospec_grad_norm": 0.40192362666130066,
+          "torchspec_grad_norm": 0.40190786123275757
+        },
+        {
+          "step": 3,
+          "nanospec_loss": 1.0339181423187256,
+          "torchspec_loss": 1.0340486764907837,
+          "draft_hidden": {
+            "cosine_mean": 0.9999974370002747,
+            "cosine_min": 0.9999940991401672,
+            "relative_l2": 0.002261954825371504,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999726353560278,
+            "relative_l2": 0.007400051031166624,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999507974396,
+            "relative_l2": 0.00031369616825886894,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.3735524117946625,
+          "torchspec_grad_norm": 0.37364649772644043
+        }
+      ],
+      "teacher": []
+    },
+    {
+      "rank": 2,
+      "passed": true,
+      "steps": [
+        {
+          "step": 1,
+          "nanospec_loss": 1.0700260400772095,
+          "torchspec_loss": 1.0700621604919434,
+          "draft_hidden": {
+            "cosine_mean": 0.9999988079071045,
+            "cosine_min": 0.9999962449073792,
+            "relative_l2": 0.0015584450447931886,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999849572193966,
+            "relative_l2": 0.005505370990562261,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.999999972779544,
+            "relative_l2": 0.0002333259573408951,
+            "max_abs": 0.0006103515625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.44889041781425476,
+          "torchspec_grad_norm": 0.4491232931613922
+        },
+        {
+          "step": 2,
+          "nanospec_loss": 1.0519366264343262,
+          "torchspec_loss": 1.051970362663269,
+          "draft_hidden": {
+            "cosine_mean": 0.9999977350234985,
+            "cosine_min": 0.9999952912330627,
+            "relative_l2": 0.0021441865246742964,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999789022074383,
+            "relative_l2": 0.006495922729932514,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "layers.0.self_attn.k_proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999601989253,
+            "relative_l2": 0.00028213864654743763,
+            "max_abs": 0.000885009765625,
+            "worst_parameter": "layers.0.mlp.gate_proj.weight"
+          },
+          "nanospec_grad_norm": 0.40192362666130066,
+          "torchspec_grad_norm": 0.40190786123275757
+        },
+        {
+          "step": 3,
+          "nanospec_loss": 1.0339181423187256,
+          "torchspec_loss": 1.0340486764907837,
+          "draft_hidden": {
+            "cosine_mean": 0.9999976754188538,
+            "cosine_min": 0.999993085861206,
+            "relative_l2": 0.0021823665592819452,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999726353560278,
+            "relative_l2": 0.007400051031166624,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999507974396,
+            "relative_l2": 0.00031369616825886894,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.3735524117946625,
+          "torchspec_grad_norm": 0.37364649772644043
+        }
+      ],
+      "teacher": []
+    },
+    {
+      "rank": 3,
+      "passed": true,
+      "steps": [
+        {
+          "step": 1,
+          "nanospec_loss": 1.0700260400772095,
+          "torchspec_loss": 1.0700621604919434,
+          "draft_hidden": {
+            "cosine_mean": 0.9999992847442627,
+            "cosine_min": 0.9999977946281433,
+            "relative_l2": 0.0012709108414128423,
+            "max_abs": 0.0078125
+          },
+          "gradients": {
+            "cosine": 0.9999849572193966,
+            "relative_l2": 0.005505370990562261,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.999999972779544,
+            "relative_l2": 0.0002333259573408951,
+            "max_abs": 0.0006103515625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.44889041781425476,
+          "torchspec_grad_norm": 0.4491232931613922
+        },
+        {
+          "step": 2,
+          "nanospec_loss": 1.0519366264343262,
+          "torchspec_loss": 1.051970362663269,
+          "draft_hidden": {
+            "cosine_mean": 0.9999979138374329,
+            "cosine_min": 0.9999949336051941,
+            "relative_l2": 0.0020875497721135616,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999789022074383,
+            "relative_l2": 0.006495922729932514,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "layers.0.self_attn.k_proj.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999601989253,
+            "relative_l2": 0.00028213864654743763,
+            "max_abs": 0.000885009765625,
+            "worst_parameter": "layers.0.mlp.gate_proj.weight"
+          },
+          "nanospec_grad_norm": 0.40192362666130066,
+          "torchspec_grad_norm": 0.40190786123275757
+        },
+        {
+          "step": 3,
+          "nanospec_loss": 1.0339181423187256,
+          "torchspec_loss": 1.0340486764907837,
+          "draft_hidden": {
+            "cosine_mean": 0.9999978542327881,
+            "cosine_min": 0.9999929070472717,
+            "relative_l2": 0.002104302402585745,
+            "max_abs": 0.015625
+          },
+          "gradients": {
+            "cosine": 0.9999726353560278,
+            "relative_l2": 0.007400051031166624,
+            "max_abs": 0.001953125,
+            "worst_parameter": "final_norm.weight"
+          },
+          "parameters": {
+            "cosine": 0.9999999507974396,
+            "relative_l2": 0.00031369616825886894,
+            "max_abs": 0.0009765625,
+            "worst_parameter": "context_proj.weight"
+          },
+          "nanospec_grad_norm": 0.3735524117946625,
+          "torchspec_grad_norm": 0.37364649772644043
+        }
+      ],
+      "teacher": []
+    }
+  ],
+  "topology": "\t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nFailed to run topology matrix\n\nGPU 0: NVIDIA H100 80GB HBM3 (UUID: GPU-f979324a-96e5-4eb0-f3f0-150a3db6d383)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 1: NVIDIA H100 80GB HBM3 (UUID: GPU-00e03774-8e05-226c-7108-d71b4a13d947)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 2: NVIDIA H100 80GB HBM3 (UUID: GPU-b581d256-0de2-9732-763b-568b269be5b0)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 3: NVIDIA H100 80GB HBM3 (UUID: GPU-08c2b817-c3d1-ebb7-9dd2-1b472f8197d3)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 4: NVIDIA H100 80GB HBM3 (UUID: GPU-03b2cad1-14c2-9593-247c-abc6d698d984)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 5: NVIDIA H100 80GB HBM3 (UUID: GPU-b0c8a64e-f76e-a589-7674-3ddabbde4355)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 6: NVIDIA H100 80GB HBM3 (UUID: GPU-aa264230-e35e-b5e4-8585-d7c0685e9014)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 7: NVIDIA H100 80GB HBM3 (UUID: GPU-2117f76a-7969-0fc1-209e-2764dec4e123)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\n",
+  "devices": [
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3"
+  ],
+  "peer_access": [
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  ],
+  "source_sha256": {
+    "experiments/__init__.py": "f1ba69ee6dd7e2a783d9e6e5a60f1f4ded7f420a0154fde8442e7eec1bcb05e1",
+    "experiments/compare.py": "c354573ff52b71941e493bd3b5330a591e1efad187a641c2dcd9e0407597c4a8",
+    "experiments/reference.py": "2058ade4804615a88a7ed97d8be105f05b4c433ad1fa14f74905a2a6dcace107",
+    "nanospec/__init__.py": "0a182cad24ea5a72cb6b2849058150edc38138cb6d5d2042aed2b81d7f9d6566",
+    "nanospec/checkpoint.py": "9870370ad5b8123a883aa927c2b588e9fc6291a8cd5c4077b6ccc863d2bfff72",
+    "nanospec/config.py": "2940522b9559cdcdb761cbd710074c872a87855f6c781ea87af2377ed21d31ae",
+    "nanospec/distributed.py": "1f92e72688e1c58b95ac7aaaec7ca0e372a50a06ff9b52b199e1e246c8f7396a",
+    "nanospec/dspark.py": "b76ef5f6a83a98dbae80d04a80f099a87cd0466ba8517955e2f0c86afe233a8c",
+    "nanospec/layers.py": "00cf99e038805dc76b4d3a6cced43b4e1d75abf5bb6441b94fc7c8fa237c8bcf",
+    "nanospec/objective.py": "9190dab5bdc31a57fea045f4252473022c12cc6d70ca85f1dc5816b3a44185c2",
+    "nanospec/ops.py": "c99794cf0bfa3de329f643a79aa54a811af328c62b1185914cfe8b6e849ca427",
+    "nanospec/qwen.py": "45e47abbec450014fdadcea1a30096fa92aee6c14ff11eac5eb9b0e72ece4c0f",
+    "nanospec/shard.py": "5d6488d13abcdc4b50e5da300bf81238202503c4e8684454872b1d1d04ae5942",
+    "nanospec/train.py": "28b13c0854f7c01cb4b1fa09f033157a349827642443f9378f50c0d51880f130"
+  },
+  "nccl_topology": "<system version=\"1\">\n  <cpu host_hash=\"0x8d330d8111d9cf41\" numaid=\"-1\" arch=\"x86_64\" vendor=\"GenuineIntel\" familyid=\"6\" modelid=\"143\">\n    <pci busid=\"0000:1b:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"0\" sm=\"90\" rank=\"0\" gdr=\"1\">\n        <nvlink target=\"0000:21:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:20:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:23:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:22:00.0\" count=\"5\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <nic>\n      <net name=\"eth0\" dev=\"0\" latency=\"0\" speed=\"10000\" port=\"0\" guid=\"0x0\" maxconn=\"65536\" gdr=\"0\"/>\n    </nic>\n    <pci busid=\"0000:29:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"1\" sm=\"90\" rank=\"1\" gdr=\"1\">\n        <nvlink target=\"0000:22:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:21:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:20:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:23:00.0\" count=\"4\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <pci busid=\"0000:45:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"2\" sm=\"90\" rank=\"2\" gdr=\"1\">\n        <nvlink target=\"0000:23:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:21:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:20:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:22:00.0\" count=\"5\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <pci busid=\"0000:4e:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"3\" sm=\"90\" rank=\"3\" gdr=\"1\">\n        <nvlink target=\"0000:23:00.0\" count=\"4\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:21:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:22:00.0\" count=\"5\" tclass=\"0x068000\"/>\n        <nvlink target=\"0000:20:00.0\" count=\"4\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n  </cpu>\n</system>\n"
+}

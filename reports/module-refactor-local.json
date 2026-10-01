@@ -1,0 +1,68 @@
+{
+  "experiment": "Module refactor numerical preservation",
+  "torch": "2.10.0+cu128",
+  "device": "NVIDIA GeForce RTX 3060",
+  "draft": [
+    {
+      "configuration": "torch.float32/torchspec",
+      "steps": 3,
+      "max_abs_difference": {
+        "loss": 0.0,
+        "hidden": 0.0,
+        "gradient": 0.0,
+        "param": 0.0
+      }
+    },
+    {
+      "configuration": "torch.float32/kl",
+      "steps": 3,
+      "max_abs_difference": {
+        "loss": 0.0,
+        "hidden": 0.0,
+        "gradient": 0.0,
+        "param": 0.0
+      }
+    },
+    {
+      "configuration": "torch.bfloat16/torchspec",
+      "steps": 3,
+      "max_abs_difference": {
+        "loss": 0.0,
+        "hidden": 0.0,
+        "gradient": 0.0,
+        "param": 0.0
+      }
+    },
+    {
+      "configuration": "torch.bfloat16/kl",
+      "steps": 3,
+      "max_abs_difference": {
+        "loss": 0.0,
+        "hidden": 0.0,
+        "gradient": 0.0,
+        "param": 0.0
+      }
+    }
+  ],
+  "teacher": {
+    "layers": 4,
+    "batch_size": 2,
+    "sequence_length": 70,
+    "projections": "block FP8 weights and dynamic activation quantization; BF16 unquantized projections",
+    "maximum_hidden_and_logit_difference": 0.0
+  },
+  "legacy_checkpoint_resume": {
+    "restored_step": 2,
+    "optimizer_steps": 3,
+    "maximum_state_difference": 0.0
+  },
+  "placement_and_legacy_shard_layout": {
+    "world_sizes": [
+      1,
+      2,
+      4
+    ],
+    "all_ranks_checked": true,
+    "master_precision_preserved": true
+  }
+}

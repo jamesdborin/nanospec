@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nanospec"
+version = "0.1.0"
+description = "Explicit PyTorch speculative-draft training on one NVLink node"
+requires-python = ">=3.12"
+dependencies = ["torch==2.10.0", "safetensors==0.8.0", "huggingface-hub==1.33.0"]
+
+[project.optional-dependencies]
+reference = ["transformers==5.3.0", "einops", "loguru", "omegaconf", "numba", "numpy<2.4", "wandb", "psutil"]
+modal = ["modal>=1.5,<2"]
+
+[tool.setuptools.packages.find]
+include = ["nanospec*"]
+
+[tool.ruff]
+line-length = 100

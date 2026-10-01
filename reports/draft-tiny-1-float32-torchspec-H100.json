@@ -1,0 +1,252 @@
+{
+  "passed": true,
+  "tolerances": {
+    "loss_relative": 2e-05,
+    "gradient_cosine": 0.99999,
+    "gradient_relative_l2": 0.0002,
+    "draft_hidden_cosine": 0.99999,
+    "teacher_hidden_cosine": 0.99,
+    "parameter_relative_l2": 1e-05,
+    "parameter_max_abs": 2e-05
+  },
+  "torchspec_revision": "076a738fdd7e64be1495338f055e8188784633c4",
+  "torch": "2.10.0+cu128",
+  "transformers": "5.3.0",
+  "config": {
+    "hidden_size": 64,
+    "intermediate_size": 128,
+    "num_hidden_layers": 2,
+    "num_attention_heads": 4,
+    "num_key_value_heads": 2,
+    "head_dim": 16,
+    "vocab_size": 128,
+    "target_hidden_size": 64,
+    "target_num_hidden_layers": 8,
+    "num_target_layers": 2,
+    "target_layer_ids": [
+      1,
+      5
+    ],
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 10000.0,
+    "max_position_embeddings": 256,
+    "mask_token_id": 127,
+    "markov_rank": 16,
+    "markov_head_type": "vanilla",
+    "enable_confidence_head": true,
+    "confidence_head_with_markov": true,
+    "fc_norm": true,
+    "tie_word_embeddings": false
+  },
+  "objective": {
+    "block_size": 7,
+    "num_anchors": 2,
+    "gamma": 4.0,
+    "ce": 0.1,
+    "l1": 0.9,
+    "kl": 0.0,
+    "confidence": 1.0
+  },
+  "target": "fixed synthetic hidden states",
+  "target_revision": null,
+  "dtype": "float32",
+  "learning_rate": 0.0003,
+  "train_gpus": 1,
+  "seed": 42,
+  "sequence_length": 32,
+  "data": "fixed random token IDs; unequal rank supervision masks",
+  "initial_checkpoint": "/artifacts/draft-tiny-1-float32-torchspec-H100-initial.pt",
+  "ranks": [
+    {
+      "rank": 0,
+      "passed": true,
+      "steps": [
+        {
+          "step": 1,
+          "nanospec_loss": 1.9866548776626587,
+          "torchspec_loss": 1.9866548776626587,
+          "draft_hidden": {
+            "cosine_mean": 1.0,
+            "cosine_min": 0.9999999403953552,
+            "relative_l2": 7.139150426382912e-08,
+            "max_abs": 4.76837158203125e-07
+          },
+          "gradients": {
+            "cosine": 0.9999999986367021,
+            "relative_l2": 1.6562670125457348e-07,
+            "max_abs": 1.1920928955078125e-07,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 1.0,
+            "relative_l2": 4.328875912815595e-08,
+            "max_abs": 1.0039657354354858e-06,
+            "worst_parameter": "layers.0.mlp.up_proj.weight"
+          },
+          "nanospec_grad_norm": 0.9937050938606262,
+          "torchspec_grad_norm": 0.9937050342559814
+        },
+        {
+          "step": 2,
+          "nanospec_loss": 1.9560004472732544,
+          "torchspec_loss": 1.9560004472732544,
+          "draft_hidden": {
+            "cosine_mean": 1.0,
+            "cosine_min": 1.0,
+            "relative_l2": 7.7444788360026e-08,
+            "max_abs": 2.384185791015625e-07
+          },
+          "gradients": {
+            "cosine": 0.9999999979411388,
+            "relative_l2": 2.1701531406811848e-07,
+            "max_abs": 1.6391277313232422e-07,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 1.0,
+            "relative_l2": 4.55918206835002e-08,
+            "max_abs": 1.0039657354354858e-06,
+            "worst_parameter": "layers.0.mlp.up_proj.weight"
+          },
+          "nanospec_grad_norm": 0.9702091217041016,
+          "torchspec_grad_norm": 0.9702091813087463
+        },
+        {
+          "step": 3,
+          "nanospec_loss": 1.927187442779541,
+          "torchspec_loss": 1.927187442779541,
+          "draft_hidden": {
+            "cosine_mean": 1.0,
+            "cosine_min": 0.9999998807907104,
+            "relative_l2": 7.691282633004448e-08,
+            "max_abs": 3.5762786865234375e-07
+          },
+          "gradients": {
+            "cosine": 0.9999999986884401,
+            "relative_l2": 2.7766326707496443e-07,
+            "max_abs": 2.980232238769531e-07,
+            "worst_parameter": "confidence_head.proj.weight"
+          },
+          "parameters": {
+            "cosine": 1.0,
+            "relative_l2": 4.775882446826092e-08,
+            "max_abs": 1.0039657354354858e-06,
+            "worst_parameter": "layers.0.mlp.up_proj.weight"
+          },
+          "nanospec_grad_norm": 0.9769882559776306,
+          "torchspec_grad_norm": 0.9769882559776306
+        }
+      ],
+      "teacher": []
+    }
+  ],
+  "topology": "\t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nFailed to run topology matrix\n\nGPU 0: NVIDIA H100 80GB HBM3 (UUID: GPU-953f2506-d826-c8b2-6516-9d077eb57d00)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 1: NVIDIA H100 80GB HBM3 (UUID: GPU-217fa048-eedf-1b39-8a70-e6b6f564a7fe)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 2: NVIDIA H100 80GB HBM3 (UUID: GPU-a09c0366-6538-3dcb-4ffe-cbee6589e2ee)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 3: NVIDIA H100 80GB HBM3 (UUID: GPU-a7f3700d-c39f-8644-d4b7-fdcd58ee564a)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 4: NVIDIA H100 80GB HBM3 (UUID: GPU-6e70320e-2b55-5489-9dd9-0c1b023f3842)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 5: NVIDIA H100 80GB HBM3 (UUID: GPU-2bb42c6b-ac27-b50f-1b2c-c24a1ef4e60e)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 6: NVIDIA H100 80GB HBM3 (UUID: GPU-586899b3-cd1e-c24e-0237-95aaf9a032f2)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\nGPU 7: NVIDIA H100 80GB HBM3 (UUID: GPU-80913c73-b45d-7346-7db3-ef24c89489b3)\n\t Link 0: 26.562 GB/s\n\t Link 1: 26.562 GB/s\n\t Link 2: 26.562 GB/s\n\t Link 3: 26.562 GB/s\n\t Link 4: 26.562 GB/s\n\t Link 5: 26.562 GB/s\n\t Link 6: 26.562 GB/s\n\t Link 7: 26.562 GB/s\n\t Link 8: 26.562 GB/s\n\t Link 9: 26.562 GB/s\n\t Link 10: 26.562 GB/s\n\t Link 11: 26.562 GB/s\n\t Link 12: 26.562 GB/s\n\t Link 13: 26.562 GB/s\n\t Link 14: 26.562 GB/s\n\t Link 15: 26.562 GB/s\n\t Link 16: 26.562 GB/s\n\t Link 17: 26.562 GB/s\n",
+  "devices": [
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3",
+    "NVIDIA H100 80GB HBM3"
+  ],
+  "peer_access": [
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  ],
+  "source_sha256": {
+    "experiments/__init__.py": "f1ba69ee6dd7e2a783d9e6e5a60f1f4ded7f420a0154fde8442e7eec1bcb05e1",
+    "experiments/compare.py": "2acad38d265da887d74f9dd97c2f7c60cadbdf3c956844866569e028e74ee56f",
+    "nanospec/__init__.py": "0a182cad24ea5a72cb6b2849058150edc38138cb6d5d2042aed2b81d7f9d6566",
+    "nanospec/checkpoint.py": "9870370ad5b8123a883aa927c2b588e9fc6291a8cd5c4077b6ccc863d2bfff72",
+    "nanospec/config.py": "2694a1069866f6e78324df9ba5eaf019e50d425bd3435c36ef980eec5911bc2a",
+    "nanospec/distributed.py": "1f92e72688e1c58b95ac7aaaec7ca0e372a50a06ff9b52b199e1e246c8f7396a",
+    "nanospec/dspark.py": "197afde78a99298b22793181ba9346a2b5dfc9206cfd0b73351a75db2716a051",
+    "nanospec/layers.py": "030e8f346a0222e4395f5023772dad716aded636b577c3efd2aca38ec5bb64a0",
+    "nanospec/objective.py": "5d03f1aa6d77580a7d3fa727e55e2ea4b7c9dc0d1422fc8ee34ec7df6ab55330",
+    "nanospec/ops.py": "26e141894c56b81f6ddb6d20757aaacb4a514ee281ad03a2d2f9ca6dd75e535a",
+    "nanospec/qwen.py": "db1c1aa56dec7ac45f5b3757896e3f1fd96cd4881a8688dc74dc8d09a8cbcb12",
+    "nanospec/shard.py": "05e8eb3cd1fccbe4459f37fdc9d659e8b8ea8c1537c185eecd7774264d1656c1",
+    "nanospec/train.py": "d50355bfcb7eddeb212f28d5345aa7cdc59eb322daec7829c57e4dc94b11488a"
+  },
+  "nccl_topology": "<system version=\"1\">\n  <cpu host_hash=\"0xf4de4a4085d59821\" numaid=\"-1\" arch=\"x86_64\" vendor=\"GenuineIntel\" familyid=\"6\" modelid=\"143\">\n    <pci busid=\"0000:04:00.0\" class=\"0x03\" link_speed=\"\" link_width=\"\">\n      <gpu dev=\"0\" sm=\"90\" rank=\"0\" gdr=\"1\">\n        <nvlink target=\"fffffff:ff:ff.0\" count=\"18\" tclass=\"0x068000\"/>\n      </gpu>\n    </pci>\n    <nic>\n      <net name=\"eth0\" dev=\"0\" latency=\"0\" speed=\"10000\" port=\"0\" guid=\"0x0\" maxconn=\"65536\" gdr=\"0\"/>\n    </nic>\n  </cpu>\n</system>\n"
+}
