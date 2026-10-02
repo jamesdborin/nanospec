@@ -99,8 +99,7 @@ All slots predict a next token, including slot 0. Binary supervision validity,
 not exponentially decayed loss weights, determines the accepted prefix.
 This is a teacher-forced training proxy, not measured decoding acceptance or
 greedy token accuracy. `TrainResult.metrics` exposes the same metric when
-calling `train()` directly. Run the focused CPU metric checks with
-`python -m experiments.acceptance` (or add `--device cuda`).
+calling `train()` directly.
 
 The comparison builds DSPark's retained components directly from installed
 TorchSpec: its DFlash backbone and vanilla Markov head. TorchSpec still owns
