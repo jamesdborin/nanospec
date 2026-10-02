@@ -101,6 +101,7 @@ class PreparedBatch:
     target_ids: torch.Tensor
     previous: torch.Tensor
     weights: torch.Tensor
+    valid: torch.Tensor
     mask: torch.Tensor
     teacher_indices: torch.Tensor
 
@@ -137,6 +138,7 @@ def prepare(ids, loss_mask, o, anchors=None):
         target_ids,
         previous,
         weights,
+        valid,
         mask,
         (safe - 1).clamp_min(0).reshape(b, -1),
     )
