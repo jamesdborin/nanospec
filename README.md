@@ -32,6 +32,8 @@ loss trajectories and checkpoint results.
 | `nanospec/qwen.py` | Qwen weight containers and FP8 checkpoint loading |
 | `nanospec/distributed.py` | GPU ownership, verifier partition metadata and CUDA broadcast buffers |
 | `nanospec/checkpoint.py` | Explicit per-rank optimizer/model checkpoints and resume |
+| `nanospec/metrics.py` | Rank-zero append-only JSONL metrics journal |
+| `nanospec/dashboard.py` | Dependency-free local live metrics dashboard |
 | `experiments/compare.py` | Installed TorchSpec + Hugging Face numerical comparison runs |
 | `experiments/reference.py` | TorchSpec backbone and Markov head with an independent autograd CE + KL objective |
 | `experiments/overlap.py` | Paired serial/overlap timing, bitwise state comparisons and a CUDA profiler trace |
@@ -205,6 +207,55 @@ accepts `--tokens /path/to/tokens.pt` (an integer tensor `[samples, seq_len]`),
 `--seq-len`, `--anchors`, `--learning-rate` (training default `1e-5`), and `--seed`.
 Without a token file it generates dummy data. A fixed dataset, tokenizer pipeline,
 validation acceptance target and speedrun scoring rules have not yet been chosen.
+
+## Local training dashboard
+
+Training rank zero appends and flushes a JSON object after every step, so metrics
+are available before the final report/checkpoint is written. By default,
+`--output outputs/train.json` writes `outputs/train.metrics.jsonl`. Override the
+journal path with `--metrics-file /path/to/run.jsonl`. Rows contain `step`, pooled
+`loss`, simulated `accept_len`, `learning_rate`, optimizer metrics (`grad_norm`,
+`updated`, `denominator`) and step time in `seconds`. Non-finite journal values
+are written as `null` rather than invalid JSON numbers.
+
+In a separate terminal, on the machine holding that file:
+
+```bash
+python -m nanospec.dashboard outputs/train.metrics.jsonl
+# Open http://127.0.0.1:8765/; change the port with --port 8766.
+```
+
+The dashboard needs only Python's standard library, not PyTorch or the reference
+extras. It binds only to `127.0.0.1`, exposes only the chosen file, and includes
+all HTML, SVG, CSS and JavaScript locally: no CDN, account, telemetry, uploads or
+paid dashboard service. It polls every two seconds using byte offsets, ignores
+an unfinished final line until it is complete, and reports missing files or read
+errors. Malformed/non-object records are skipped and counted. Numeric top-level
+fields are charted automatically (including future evaluation fields); `step`
+is the x-axis, or the record number if absent. Charts retain the latest 2,000
+points per metric while loading history in at most 1 MiB batches. Hover for
+values, filter metric names, or pause live refresh.
+
+Resume with the **same journal path** to retain previous records. The default
+follows `--output`, so pass `--metrics-file` explicitly if the resumed report has
+a different filename. New runs should use a fresh path to avoid mixing histories.
+An interrupted trailing record is preserved and separated from the next row;
+readers skip it if malformed. Use only one writer per journal. The dashboard
+resets when a file is replaced or becomes shorter than its cursor. It is a live
+viewer, not a durable database; flushing is not an `fsync` durability guarantee.
+
+Modal training automatically writes the journal alongside its report in the
+`nanospec-artifacts` volume (the report's `metrics_file` gives its path). The
+existing end-of-run volume commit persists it; download it for local viewing:
+
+```bash
+modal volume get nanospec-artifacts train-qwen-4-bfloat16-ce-kl-H100.metrics.jsonl reports/train.metrics.jsonl
+python -m nanospec.dashboard reports/train.metrics.jsonl
+```
+
+This download is an after-run snapshot, not a live Modal stream. For a remote
+machine with a live file, run the dashboard there and forward its loopback port
+with `ssh -L 8765:127.0.0.1:8765 <host>` instead of exposing a public server.
 
 ## Numerical and performance boundaries
 
