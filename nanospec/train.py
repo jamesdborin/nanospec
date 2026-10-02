@@ -409,6 +409,12 @@ def arguments():
     p.add_argument("--config", default="qwen")
     p.add_argument("--output", default="outputs/train.json")
     p.add_argument("--checkpoint", default="")
+    p.add_argument(
+        "--checkpoint-every",
+        type=int,
+        default=0,
+        help="Save resumable drafter/optimizer shards every N absolute training steps (0 disables)",
+    )
     p.add_argument("--seq-len", type=int, default=32)
     p.add_argument("--anchors", type=int, default=2)
     p.add_argument("--seed", type=int, default=42)
@@ -419,7 +425,10 @@ def arguments():
         help="Optional .pt tensor [samples, seq_len] of already tokenized fixed data",
     )
     p.add_argument("--target", action="store_true", help=argparse.SUPPRESS)
-    return p.parse_args()
+    args = p.parse_args()
+    if args.checkpoint_every < 0:
+        p.error("--checkpoint-every must be nonnegative")
+    return args
 
 
 def config_path(name):
@@ -507,7 +516,8 @@ def main():
         data.ndim != 2 or data.shape[1] != args.seq_len or len(data) < node.train_gpus
     ):
         raise ValueError("--tokens needs at least train_gpus rows with --seq-len columns")
-    rows = []
+    rows, checkpoints = [], []
+    ckpt_base = str(Path(args.output).with_suffix("")) + "-checkpoint"
     for offset in range(args.steps):
         step = start + offset
         ids = (
@@ -542,10 +552,17 @@ def main():
             rows.append(row)
             if node.rank == 0:
                 print(json.dumps(row), flush=True)
+        if node.training and (
+            (args.checkpoint_every and (step + 1) % args.checkpoint_every == 0)
+            or offset == args.steps - 1
+        ):
+            ckpt_path = checkpoint.save(ckpt_base, model, optimizer, o, step + 1)
+            checkpoints.append({"step": step + 1, "path": ckpt_path})
+            if node.rank == 0:
+                print(json.dumps({"step": step + 1, "checkpoint": ckpt_path}), flush=True)
+        # Inference ranks wait here while training ranks collectively finish any save.
         dist.barrier()
     if node.training:
-        ckpt_path = str(Path(args.output).with_suffix("")) + "-checkpoint"
-        ckpt_path = checkpoint.save(ckpt_path, model, optimizer, o, start + args.steps)
         if node.rank == 0:
             output = Path(args.output)
             output.parent.mkdir(parents=True, exist_ok=True)
@@ -561,6 +578,8 @@ def main():
                         "learning_rate": optimizer.lr,
                         "steps": rows,
                         "checkpoint": ckpt_path,
+                        "checkpoint_every": args.checkpoint_every,
+                        "checkpoints": checkpoints,
                     },
                     indent=2,
                 )

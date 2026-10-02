@@ -100,12 +100,15 @@ def run_gpu(
     checkpoint="",
     gpu_model="H100",
     learning_rate=0.0,
+    checkpoint_every=0,
 ):
     import hashlib
     import json
     import os
     import subprocess
 
+    if checkpoint_every < 0:
+        raise ValueError("--checkpoint-every must be nonnegative")
     if mode == "sequence":
         results = []
         for case in comparison_cases():
@@ -121,6 +124,7 @@ def run_gpu(
                 "",
                 gpu_model,
                 learning_rate,
+                checkpoint_every=checkpoint_every,
             )
             results.append((case, result))
             if result.get("passed") is False:
@@ -179,6 +183,8 @@ def run_gpu(
         "--output",
         output,
     ]
+    if mode == "train":
+        args.extend(["--checkpoint-every", str(checkpoint_every)])
     if mode == "full":
         args.append("--target")
     if mode == "overlap":
@@ -222,9 +228,12 @@ def main(
     checkpoint: str = "",
     gpu: str = "H100!",
     learning_rate: float = 0.0,
+    checkpoint_every: int = 0,
 ):
     import json
 
+    if checkpoint_every < 0:
+        raise ValueError("--checkpoint-every must be nonnegative")
     if mode == "cache":
         print(cache_target.remote())
         return
@@ -247,6 +256,7 @@ def main(
         checkpoint,
         gpu_model,
         learning_rate,
+        checkpoint_every=checkpoint_every,
     )
     if mode != "sequence":
         results = [((mode, config, train_gpus, dtype), results)]
