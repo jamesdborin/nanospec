@@ -12,6 +12,7 @@ from huggingface_hub import snapshot_download
 
 from nanospec import checkpoint, ops
 from nanospec.config import TARGET_MODEL, TARGET_REVISION, DraftConfig, Objective
+from nanospec.data import DATASET, DATASET_REVISION, open_perfectblend_batches
 from nanospec.distributed import Node, Teacher, TeacherBatch
 from nanospec.dspark import DSpark, initialize, prepare
 from nanospec.layers import DecoderActivations, MLPActivations, SelfAttentionActivations
@@ -418,6 +419,12 @@ def arguments():
         default="",
         help="Optional .pt tensor [samples, seq_len] of already tokenized fixed data",
     )
+    p.add_argument(
+        "--dataset-examples",
+        type=int,
+        default=None,
+        help="Use the first N OpenPerfectBlend rows (default: all); ignored with --tokens",
+    )
     p.add_argument("--target", action="store_true", help=argparse.SUPPRESS)
     return p.parse_args()
 
@@ -486,11 +493,15 @@ def main():
     args = arguments()
     if args.steps < 1:
         raise ValueError("steps must be positive")
+    if args.seq_len < 2:
+        raise ValueError("seq-len must be at least 2")
+    if not args.tokens and args.dataset_examples is not None and args.dataset_examples < 1:
+        raise ValueError("dataset-examples must be positive")
     node = Node(args.train_gpus)
     torch.set_float32_matmul_precision("highest")
     c = DraftConfig.load(config_path(args.config))
     o = Objective(num_anchors=args.anchors)
-    _path, teacher = setup_target(node, c)
+    path, teacher = setup_target(node, c)
     model = build_draft(node, c, getattr(torch, args.dtype), args.seed, teacher)
     learning_rate = args.learning_rate if args.learning_rate is not None else 1e-5
     if learning_rate <= 0:
@@ -507,16 +518,28 @@ def main():
         data.ndim != 2 or data.shape[1] != args.seq_len or len(data) < node.train_gpus
     ):
         raise ValueError("--tokens needs at least train_gpus rows with --seq-len columns")
+    batches = (
+        open_perfectblend_batches(
+            path, node.train_gpus, args.seq_len, examples=args.dataset_examples, start_step=start
+        )
+        if data is None and node.rank == 0
+        else None
+    )
     rows = []
     for offset in range(args.steps):
         step = start + offset
-        ids = (
-            dummy_ids(node, c, args.seq_len, args.seed + step)
-            if data is None
-            else data[(torch.arange(node.train_gpus) + step * node.train_gpus) % len(data)]
-            .long()
-            .to(node.device)
-        )
+        if data is not None:
+            ids = data[(torch.arange(node.train_gpus) + step * node.train_gpus) % len(data)]
+            ids = ids.long().to(node.device)
+        else:
+            ids = (
+                next(batches).to(node.device)
+                if node.rank == 0
+                else torch.empty(
+                    node.train_gpus, args.seq_len, dtype=torch.long, device=node.device
+                )
+            )
+            dist.broadcast(ids, src=0)
         t0 = time.perf_counter()
         torch.manual_seed(args.seed + step * node.train_gpus + node.rank)
         result = train(ids, model, o, verifier=teacher, optimizer=optimizer)
@@ -559,6 +582,15 @@ def main():
                         "train_gpus": args.train_gpus,
                         "dtype": args.dtype,
                         "learning_rate": optimizer.lr,
+                        "seed": args.seed,
+                        "sequence_length": args.seq_len,
+                        "data": {"tokens": args.tokens}
+                        if args.tokens
+                        else {
+                            "dataset": DATASET,
+                            "revision": DATASET_REVISION,
+                            "examples": args.dataset_examples,
+                        },
                         "steps": rows,
                         "checkpoint": ckpt_path,
                     },
