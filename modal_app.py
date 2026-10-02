@@ -100,6 +100,12 @@ def run_gpu(
     checkpoint="",
     gpu_model="H100",
     learning_rate=0.0,
+    tokens="",
+    seq_len=32,
+    eval_tokens="",
+    eval_every=0,
+    eval_steps=4,
+    eval_at_end=True,
 ):
     import hashlib
     import json
@@ -187,6 +193,15 @@ def run_gpu(
         args.extend(["--checkpoint", checkpoint])
     if learning_rate:
         args.extend(["--learning-rate", str(learning_rate)])
+    if mode == "train":
+        args.extend(["--seq-len", str(seq_len)])
+        if tokens:
+            args.extend(["--tokens", tokens])
+        if eval_tokens:
+            args.extend(["--eval-tokens", eval_tokens])
+        args.extend(["--eval-every", str(eval_every), "--eval-steps", str(eval_steps)])
+        if not eval_at_end:
+            args.append("--no-eval-at-end")
     env = dict(
         os.environ,
         OMP_NUM_THREADS="2",
@@ -222,6 +237,12 @@ def main(
     checkpoint: str = "",
     gpu: str = "H100!",
     learning_rate: float = 0.0,
+    tokens: str = "",
+    seq_len: int = 32,
+    eval_tokens: str = "",
+    eval_every: int = 0,
+    eval_steps: int = 4,
+    eval_at_end: bool = True,
 ):
     import json
 
@@ -237,6 +258,8 @@ def main(
     out.mkdir(exist_ok=True)
     if checkpoint and mode != "train":
         raise ValueError("--checkpoint resumes training; use --mode train")
+    if mode != "train" and (tokens or eval_tokens or eval_every or not eval_at_end):
+        raise ValueError("Token files and evaluation options require --mode train")
     runner = run_gpu.with_options(gpu=f"{gpu}:8")
     results = runner.remote(
         mode,
@@ -247,6 +270,12 @@ def main(
         checkpoint,
         gpu_model,
         learning_rate,
+        tokens=tokens,
+        seq_len=seq_len,
+        eval_tokens=eval_tokens,
+        eval_every=eval_every,
+        eval_steps=eval_steps,
+        eval_at_end=eval_at_end,
     )
     if mode != "sequence":
         results = [((mode, config, train_gpus, dtype), results)]
