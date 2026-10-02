@@ -15,6 +15,7 @@ from nanospec.config import TARGET_MODEL, TARGET_REVISION, DraftConfig, Objectiv
 from nanospec.distributed import Node, Teacher, TeacherBatch
 from nanospec.dspark import DSpark, initialize, prepare
 from nanospec.layers import DecoderActivations, MLPActivations, SelfAttentionActivations
+from nanospec.metrics import append_metrics
 from nanospec.objective import LossMetrics
 from nanospec.shard import AdamW
 
@@ -408,6 +409,11 @@ def arguments():
     p.add_argument("--dtype", choices=("float32", "bfloat16"), default="bfloat16")
     p.add_argument("--config", default="qwen")
     p.add_argument("--output", default="outputs/train.json")
+    p.add_argument(
+        "--metrics-file",
+        default="",
+        help="Append-only JSONL journal (default: <output stem>.metrics.jsonl)",
+    )
     p.add_argument("--checkpoint", default="")
     p.add_argument("--seq-len", type=int, default=32)
     p.add_argument("--anchors", type=int, default=2)
@@ -486,6 +492,13 @@ def main():
     args = arguments()
     if args.steps < 1:
         raise ValueError("steps must be positive")
+    metrics_file = (
+        Path(args.metrics_file)
+        if args.metrics_file
+        else Path(args.output).with_suffix(".metrics.jsonl")
+    )
+    if metrics_file.resolve() == Path(args.output).resolve():
+        raise ValueError("--metrics-file must differ from --output")
     node = Node(args.train_gpus)
     torch.set_float32_matmul_precision("highest")
     c = DraftConfig.load(config_path(args.config))
@@ -507,6 +520,8 @@ def main():
         data.ndim != 2 or data.shape[1] != args.seq_len or len(data) < node.train_gpus
     ):
         raise ValueError("--tokens needs at least train_gpus rows with --seq-len columns")
+    if node.rank == 0:
+        print(f"Metrics: {metrics_file}", flush=True)
     rows = []
     for offset in range(args.steps):
         step = start + offset
@@ -535,12 +550,14 @@ def main():
                 "step": step + 1,
                 "loss": float(pooled[0] / pooled[1].clamp_min(1e-6)),
                 "accept_len": float(pooled[2] / pooled[3].clamp_min(1.0)),
+                "learning_rate": optimizer.lr,
                 **update,
             }
             torch.cuda.synchronize()
             row["seconds"] = time.perf_counter() - t0
             rows.append(row)
             if node.rank == 0:
+                append_metrics(metrics_file, row)
                 print(json.dumps(row), flush=True)
         dist.barrier()
     if node.training:
@@ -560,6 +577,7 @@ def main():
                         "dtype": args.dtype,
                         "learning_rate": optimizer.lr,
                         "steps": rows,
+                        "metrics_file": str(metrics_file),
                         "checkpoint": ckpt_path,
                     },
                     indent=2,
