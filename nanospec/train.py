@@ -40,13 +40,17 @@ def train(
     anchors=None,
     accumulation_steps=1,
     overlap=True,
+    forward_only=False,
 ):
     """One synchronous step: verifier -> NVLink -> draft -> loss -> backward -> AdamW.
 
     Modules hold weights; this function owns execution and activation lifetimes.
     Comparisons can supply fixed teacher tensors and omit the optimizer to inspect
-    raw gradients. Passing only a verifier runs the same inference/transfer path.
+    raw gradients. forward_only=True stops after loss, without touching gradient
+    or optimizer buffers. Passing only a verifier runs the same inference/transfer path.
     """
+    if forward_only and optimizer is not None:
+        raise ValueError("Forward-only evaluation cannot use an optimizer")
     if verifier is not None and teacher_batch is not None:
         raise ValueError("Supply a verifier or fixed teacher tensors, not both")
 
@@ -200,7 +204,8 @@ def train(
         for norm, feature in zip(drafter.fc_norm, hidden_states):
             normalized, saved = ops.rms_norm(feature, norm.weight, norm.eps)
             inputs.append(normalized)
-            feature_norms.append(saved)
+            if not forward_only:
+                feature_norms.append(saved)
     context_input = torch.cat(inputs, -1).to(dtype)
     projected = ops.linear(context_input, drafter.context_proj.weight)
     context, context_norm = ops.rms_norm(
@@ -244,7 +249,10 @@ def train(
         out, attention = ops.attention(q, k, v, prepared.mask)
         output_input = out.transpose(1, 2).contiguous().reshape(batch, sequence, heads * d)
         out = ops.linear(output_input, attn.o_proj.weight)
-        attention_saved = SelfAttentionActivations(n, query_norm, key_norm, attention, output_input)
+        if not forward_only:
+            attention_saved = SelfAttentionActivations(
+                n, query_norm, key_norm, attention, output_input
+            )
         residual = x + out
         n, post_norm = ops.rms_norm(
             residual, layer.post_attention_layernorm.weight, layer.post_attention_layernorm.eps
@@ -255,14 +263,15 @@ def train(
         product = activated * up
         out = ops.linear(product, mlp.down_proj.weight)
         x = residual + out
-        activations.append(
-            DecoderActivations(
-                input_norm,
-                attention_saved,
-                post_norm,
-                MLPActivations(n, gate, up, activated, product),
+        if not forward_only:
+            activations.append(
+                DecoderActivations(
+                    input_norm,
+                    attention_saved,
+                    post_norm,
+                    MLPActivations(n, gate, up, activated, product),
+                )
             )
-        )
         forward.release(i)
 
     # Frozen LM projection plus trainable Markov logits, then CE + KL.
@@ -291,6 +300,8 @@ def train(
     metrics, loss_saved = ops.ce_kl_loss(logits, target_logits, prepared, o)
     forward.release(head_index)
     forward.finish()
+    if forward_only:
+        return TrainResult(teacher_batch, metrics, hidden)
 
     # Heads backward: bind explicit gradient buffers, then reverse each operation.
     backward = drafter.sharding.schedule(backward=True, overlap=overlap)
@@ -401,6 +412,47 @@ def train(
     return TrainResult(teacher_batch, metrics, hidden, update)
 
 
+@torch.no_grad()
+def evaluate(node, data, drafter, objective, *, verifier, steps, seed):
+    """All ranks evaluate the same fixed held-out window; only draft ranks pool metrics."""
+    pooled = torch.zeros(4, device=node.device, dtype=torch.float64) if node.training else None
+    devices = [node.device] if node.device.type == "cuda" else []
+    # Seed only this process's device, and restore both CPU and device RNG states.
+    with torch.random.fork_rng(devices=devices):
+        for batch in range(steps):
+            batch_seed = seed + batch * node.train_gpus + node.rank
+            torch.random.default_generator.manual_seed(batch_seed)
+            if node.device.type == "cuda":
+                with torch.cuda.device(node.device):
+                    torch.cuda.manual_seed(batch_seed)
+            ids = data[batch * node.train_gpus : (batch + 1) * node.train_gpus].to(node.device)
+            result = train(ids, drafter, objective, verifier=verifier, forward_only=True)
+            if node.training:
+                m = result.metrics
+                pooled.add_(
+                    torch.stack((m.numerator, m.denominator, m.accept_len_sum, m.accept_len_total))
+                )
+            del result
+            # Inference ranks must not start the next teacher pass ahead of the draft ranks.
+            dist.barrier()
+    row = None
+    if node.training:
+        dist.all_reduce(pooled, group=node.train_group)
+        row = {
+            "split": "held_out",
+            "batches": steps,
+            "samples": steps * node.train_gpus,
+            "loss": float(pooled[0] / pooled[1].clamp_min(1e-6)),
+            "accept_len": float(pooled[2] / pooled[3].clamp_min(1.0)),
+            "loss_numerator": float(pooled[0]),
+            "loss_denominator": float(pooled[1]),
+            "accept_len_sum": float(pooled[2]),
+            "accept_len_total": float(pooled[3]),
+        }
+    dist.barrier()
+    return row
+
+
 def arguments():
     p = argparse.ArgumentParser()
     p.add_argument("--train-gpus", type=int, default=2, choices=(1, 2, 4))
@@ -417,6 +469,23 @@ def arguments():
         "--tokens",
         default="",
         help="Optional .pt tensor [samples, seq_len] of already tokenized fixed data",
+    )
+    p.add_argument(
+        "--eval-tokens",
+        default="",
+        help="Held-out .pt integer tensor [samples, seq_len], disjoint from training data",
+    )
+    p.add_argument(
+        "--eval-every", type=int, default=0, help="Evaluate every N updates; 0 is end-only"
+    )
+    p.add_argument(
+        "--eval-steps", type=int, default=4, help="Fixed held-out batches per evaluation"
+    )
+    p.add_argument(
+        "--eval-at-end",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Evaluate after the final update when --eval-tokens is supplied",
     )
     p.add_argument("--target", action="store_true", help=argparse.SUPPRESS)
     return p.parse_args()
@@ -486,6 +555,31 @@ def main():
     args = arguments()
     if args.steps < 1:
         raise ValueError("steps must be positive")
+    if args.eval_every < 0 or args.eval_steps < 1:
+        raise ValueError("eval-every must be nonnegative and eval-steps must be positive")
+    if args.eval_every and not args.eval_tokens:
+        raise ValueError("--eval-every requires --eval-tokens")
+    if args.eval_tokens and args.tokens and Path(args.eval_tokens).samefile(args.tokens):
+        raise ValueError("--eval-tokens must be a separate held-out file, not --tokens")
+    eval_data = (
+        torch.load(args.eval_tokens, map_location="cpu", weights_only=True)
+        if args.eval_tokens
+        else None
+    )
+    if args.eval_tokens:
+        if (
+            not isinstance(eval_data, torch.Tensor)
+            or eval_data.dtype
+            not in (torch.uint8, torch.int8, torch.int16, torch.int32, torch.int64)
+            or eval_data.ndim != 2
+            or eval_data.shape[1] != args.seq_len
+            or len(eval_data) < args.eval_steps * args.train_gpus
+        ):
+            raise ValueError(
+                "--eval-tokens needs an integer tensor with at least eval_steps * train_gpus "
+                "rows and --seq-len columns (no wrapping or training-data fallback)"
+            )
+        eval_data = eval_data.long()
     node = Node(args.train_gpus)
     torch.set_float32_matmul_precision("highest")
     c = DraftConfig.load(config_path(args.config))
@@ -507,7 +601,7 @@ def main():
         data.ndim != 2 or data.shape[1] != args.seq_len or len(data) < node.train_gpus
     ):
         raise ValueError("--tokens needs at least train_gpus rows with --seq-len columns")
-    rows = []
+    rows, evaluations = [], []
     for offset in range(args.steps):
         step = start + offset
         ids = (
@@ -543,6 +637,18 @@ def main():
             if node.rank == 0:
                 print(json.dumps(row), flush=True)
         dist.barrier()
+        if eval_data is not None and (
+            (args.eval_every > 0 and (step + 1) % args.eval_every == 0)
+            or (args.eval_at_end and offset == args.steps - 1)
+        ):
+            row = evaluate(
+                node, eval_data, model, o, verifier=teacher, steps=args.eval_steps, seed=args.seed
+            )
+            if node.training:
+                row = {"step": step + 1, **row}
+                evaluations.append(row)
+                if node.rank == 0:
+                    print(json.dumps(row), flush=True)
     if node.training:
         ckpt_path = str(Path(args.output).with_suffix("")) + "-checkpoint"
         ckpt_path = checkpoint.save(ckpt_path, model, optimizer, o, start + args.steps)
@@ -560,6 +666,16 @@ def main():
                         "dtype": args.dtype,
                         "learning_rate": optimizer.lr,
                         "steps": rows,
+                        "evaluation": {
+                            "tokens": args.eval_tokens,
+                            "every": args.eval_every,
+                            "steps": args.eval_steps,
+                            "at_end": args.eval_at_end,
+                            "seed": args.seed,
+                        }
+                        if eval_data is not None
+                        else None,
+                        "evaluations": evaluations,
                         "checkpoint": ckpt_path,
                     },
                     indent=2,

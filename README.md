@@ -81,6 +81,9 @@ The verifier-only form, `train(ids, verifier=teacher)`, executes the identical
 inference and transfer operations for comparison with Hugging Face.
 `overlap=False` selects the serial sharding schedule for paired measurements;
 the default overlaps draft communication when using two or four training GPUs.
+`forward_only=True` stops this same schedule after the loss and releases gathered
+weights without running handwritten backward, gradient reductions or AdamW.
+Omitting the optimizer alone still runs backward, as required by comparisons.
 
 ## Objective and reference pins
 
@@ -203,8 +206,63 @@ cache the pinned model, then use
 `torchrun --standalone --nproc_per_node=8 -m nanospec.train`. The CLI also
 accepts `--tokens /path/to/tokens.pt` (an integer tensor `[samples, seq_len]`),
 `--seq-len`, `--anchors`, `--learning-rate` (training default `1e-5`), and `--seed`.
-Without a token file it generates dummy data. A fixed dataset, tokenizer pipeline,
-validation acceptance target and speedrun scoring rules have not yet been chosen.
+Without a training token file it generates dummy data. A default dataset,
+tokenizer pipeline, validation acceptance target and speedrun scoring rules have
+not yet been chosen.
+
+### Held-out evaluation
+
+Supply an independent, already-tokenized validation split; evaluation never uses
+training batches or falls back to dummy data:
+
+```bash
+torchrun --standalone --nproc_per_node=8 -m nanospec.train \
+  --config qwen --train-gpus 4 --steps 100 --seq-len 32 \
+  --tokens train.pt --eval-tokens held-out.pt --eval-every 20 --eval-steps 4
+```
+
+Both files are integer tensors `[samples, seq_len]` of unpadded token IDs for the
+pinned teacher. Split source documents **before** tokenization/chunking so the
+held-out file contains no training documents or chunks. The runtime rejects the
+same training/evaluation file (including symlink/hardlink aliases); different
+filenames alone do not establish a disjoint split. This standalone token-file
+baseline does not depend on a dataset loader. When training uses dummy data,
+validation still requires a real, explicitly supplied `--eval-tokens` file.
+
+`--eval-steps` defaults to 4 batches, each containing `train_gpus` rows. The file
+must have at least `eval_steps * train_gpus` rows. Every evaluation uses exactly
+those first rows in order, without wrapping, and the same seed-derived anchors
+for each batch/rank, independent of training step. Extra rows are not evaluated.
+`--eval-every 0` (the default) disables periodic evaluation. Providing a file also
+evaluates after the final update by default; `--no-eval-at-end` disables that.
+A periodic evaluation on the final update is not repeated. Periodic cadence uses
+the absolute completed-update count, including checkpoint resume.
+
+Evaluation is forward-only, with no autograd, handwritten backward or optimizer
+updates. CPU and local CUDA RNG states are restored, and model weights, accumulated
+gradients and optimizer state are unchanged. All inference/training ranks execute
+the same evaluation batches and barriers. Raw loss numerators/weighted-token
+denominators and `accept_len_sum`/`accept_len_total` are summed over **all** batches
+and training ranks before division; batch/rank averages are not averaged.
+`accept_len_total` counts valid supervised blocks, not tokens or loss weights.
+The metric retains the teacher-forced simulated-acceptance semantics above, not
+actual decoding acceptance; empty supervision reports zero loss/acceptance.
+
+Rank 0 prints JSON rows tagged `"split": "held_out"`, with `step`, `loss`,
+`accept_len`, raw sums/counts and batch/sample counts. The output report keeps
+training rows in `steps`, evaluation rows in `evaluations`, and the file/cadence/
+seed settings in `evaluation`.
+
+Modal exposes the same options in train mode; file paths refer to tensors already
+uploaded to the mounted `nanospec-artifacts` volume, not local host files:
+
+```bash
+modal volume put nanospec-artifacts train.pt /train.pt
+modal volume put nanospec-artifacts held-out.pt /held-out.pt
+modal run modal_app.py --mode train --config qwen --train-gpus 4 --steps 100 \
+  --tokens /artifacts/train.pt --eval-tokens /artifacts/held-out.pt \
+  --seq-len 32 --eval-every 20 --eval-steps 4
+```
 
 ## Numerical and performance boundaries
 
