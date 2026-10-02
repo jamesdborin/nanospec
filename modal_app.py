@@ -124,7 +124,7 @@ def run_gpu(
                 "",
                 gpu_model,
                 learning_rate,
-                checkpoint_every,
+                checkpoint_every=checkpoint_every,
             )
             results.append((case, result))
             if result.get("passed") is False:
@@ -256,7 +256,7 @@ def main(
         checkpoint,
         gpu_model,
         learning_rate,
-        checkpoint_every,
+        checkpoint_every=checkpoint_every,
     )
     if mode != "sequence":
         results = [((mode, config, train_gpus, dtype), results)]
