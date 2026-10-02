@@ -28,7 +28,7 @@ image = (
         "wandb",
         "ray",
         "pyzmq",
-        "datasets",
+        "datasets==5.0.1",
         "accelerate",
         "qwen-vl-utils",
         "openai-harmony",
@@ -100,6 +100,7 @@ def run_gpu(
     checkpoint="",
     gpu_model="H100",
     learning_rate=0.0,
+    dataset_examples=0,
 ):
     import hashlib
     import json
@@ -121,6 +122,7 @@ def run_gpu(
                 "",
                 gpu_model,
                 learning_rate,
+                dataset_examples,
             )
             results.append((case, result))
             if result.get("passed") is False:
@@ -187,6 +189,8 @@ def run_gpu(
         args.extend(["--checkpoint", checkpoint])
     if learning_rate:
         args.extend(["--learning-rate", str(learning_rate)])
+    if module == "nanospec.train" and dataset_examples:
+        args.extend(["--dataset-examples", str(dataset_examples)])
     env = dict(
         os.environ,
         OMP_NUM_THREADS="2",
@@ -222,6 +226,7 @@ def main(
     checkpoint: str = "",
     gpu: str = "H100!",
     learning_rate: float = 0.0,
+    dataset_examples: int = 0,
 ):
     import json
 
@@ -247,6 +252,7 @@ def main(
         checkpoint,
         gpu_model,
         learning_rate,
+        dataset_examples,
     )
     if mode != "sequence":
         results = [((mode, config, train_gpus, dtype), results)]

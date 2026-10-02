@@ -24,6 +24,7 @@ loss trajectories and checkpoint results.
 | File | Responsibility |
 | --- | --- |
 | `nanospec/train.py` | One visible verifier → transfer → draft → loss → reverse → optimizer schedule, plus CLI setup |
+| `nanospec/data.py` | Pinned streaming OpenPerfectBlend chat tokenization and unpadded packing |
 | `nanospec/dspark.py` | DSPark weight tree, checkpoint layout, anchor sampling and masks |
 | `nanospec/layers.py` | Draft layer weight containers and named activation buffers |
 | `nanospec/ops.py` | Tensor operations: projections, norms, RoPE, attention, FP8, delta rule and explicit derivatives |
@@ -182,10 +183,10 @@ Run the full five-layer comparison on four H100 training GPUs:
 modal run modal_app.py --mode full --config qwen --train-gpus 4 --dtype bfloat16 --steps 3
 ```
 
-Train with KL and write a resumable checkpoint:
+Train on OpenPerfectBlend with CE + KL and write a resumable checkpoint:
 
 ```bash
-modal run modal_app.py --mode train --config qwen --train-gpus 4 --dtype bfloat16 --steps 3
+modal run modal_app.py --mode train --config qwen --train-gpus 4 --dtype bfloat16 --steps 3 --dataset-examples 100000
 ```
 
 Reports are downloaded to `reports/`; initial checkpoints and training checkpoints
@@ -195,7 +196,8 @@ For resume, pass the saved checkpoint directory as `--checkpoint`. Resume curren
 requires the same dtype, configuration, objective and training GPU count.
 Checkpoints and configurations from before the CE + KL simplification are
 incompatible and must be regenerated; no migration or compatibility mode is provided.
-Keep the same seed, sequence length and token data to continue the same data stream.
+Keep the same seed, sequence length and token data (or dataset subset limit) to
+continue the same data stream.
 Each save creates a new checkpoint generation; its exact directory is in the report.
 
 On an equivalent local node, install the core package with `pip install -e .`,
@@ -203,8 +205,36 @@ cache the pinned model, then use
 `torchrun --standalone --nproc_per_node=8 -m nanospec.train`. The CLI also
 accepts `--tokens /path/to/tokens.pt` (an integer tensor `[samples, seq_len]`),
 `--seq-len`, `--anchors`, `--learning-rate` (training default `1e-5`), and `--seed`.
-Without a token file it generates dummy data. A fixed dataset, tokenizer pipeline,
-validation acceptance target and speedrun scoring rules have not yet been chosen.
+Without `--tokens`, training streams the public
+[`mlabonne/open-perfectblend`](https://huggingface.co/datasets/mlabonne/open-perfectblend)
+`default/train` split (1,420,909 rows), pinned at
+`af60f3c18201652a83a93f46fcfee1b646ba3df7`. `--dataset-examples 100000`
+selects the first 100,000 source rows; omitting it uses the whole split (Modal's
+`--dataset-examples 0` also means the whole split). There is no shuffle: selection
+and order are deterministic, independent of the training seed. Data is streamed
+only on rank 0, and packed token batches are broadcast to the other ranks; the
+full dataset is not eagerly downloaded or loaded into memory. Streaming still requires
+Hugging Face network access for metadata and Parquet range reads.
+
+Rows contain `conversations: [{from, value}, ...]` and `source`. `human`/`gpt`
+roles become `user`/`assistant` (with `system` supported), using the pinned target
+checkpoint's tokenizer and chat template with `add_generation_prompt=False`.
+Empty or user-less conversations are skipped; prompt-only rows are retained.
+Conversations are concatenated and split into equal `--seq-len` chunks without
+padding or truncating individual chats. All real chat tokens, including prompts
+and template delimiters, receive supervision; this is not assistant-only SFT.
+Context can cross conversation boundaries within a packed chunk. At exhaustion,
+the same selection repeats, carrying any remaining tokens into the next pass.
+
+Resume reconstructs the identical next batch from the checkpoint's completed
+step count, replaying/tokenizing the stream without keeping it in memory. This
+can add startup time for long runs. Keep the same `--dataset-examples`,
+`--seq-len` and training GPU count on resume; data settings are recorded in the
+training report but are not checked by checkpoint restore. `--tokens` takes
+precedence over the dataset option and retains its cyclic row selection.
+Numerical comparisons (`draft`, `full`, `overlap`) still use their fixed dummy
+data and do not access OpenPerfectBlend. A validation acceptance target and
+speedrun scoring rules have not yet been chosen.
 
 ## Numerical and performance boundaries
 
