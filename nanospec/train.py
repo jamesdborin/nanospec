@@ -522,9 +522,21 @@ def main():
         result = train(ids, model, o, verifier=teacher, optimizer=optimizer)
         if node.training:
             metrics, update = result.metrics, result.update
-            pooled = torch.stack((metrics.numerator, metrics.denominator))
+            pooled = torch.stack(
+                (
+                    metrics.numerator,
+                    metrics.denominator,
+                    metrics.accept_len_sum,
+                    metrics.accept_len_total,
+                )
+            )
             dist.all_reduce(pooled, group=node.train_group)
-            row = {"step": step + 1, "loss": float(pooled[0] / pooled[1].clamp_min(1e-6)), **update}
+            row = {
+                "step": step + 1,
+                "loss": float(pooled[0] / pooled[1].clamp_min(1e-6)),
+                "accept_len": float(pooled[2] / pooled[3].clamp_min(1.0)),
+                **update,
+            }
             torch.cuda.synchronize()
             row["seconds"] = time.perf_counter() - t0
             rows.append(row)

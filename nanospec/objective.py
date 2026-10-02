@@ -14,10 +14,16 @@ class LossMetrics:
     kl: torch.Tensor
     numerator: torch.Tensor
     denominator: torch.Tensor
+    accept_len_sum: torch.Tensor
+    accept_len_total: torch.Tensor
 
     @property
     def loss(self):
         return self.numerator / self.denominator.clamp_min(1e-6)
+
+    @property
+    def accept_len(self):
+        return self.accept_len_sum / self.accept_len_total.clamp_min(1.0)
 
 
 @dataclass
@@ -28,6 +34,16 @@ class LossActivations:
     target_probabilities: torch.Tensor
     weights: torch.Tensor
     target_ids: torch.Tensor
+
+
+@torch.no_grad()
+def acceptance_length_counts(probabilities, target_probabilities, valid):
+    """Distribution-overlap prefix length per block, including the verifier bonus."""
+    accept_rate = torch.minimum(probabilities, target_probabilities).sum(-1)
+    prefix = (accept_rate * valid).cumprod(-1)
+    block_valid = valid.any(-1)
+    lengths = prefix.sum(-1) + 1.0
+    return (lengths * block_valid).sum(), block_valid.float().sum()
 
 
 @torch.no_grad()
@@ -43,7 +59,10 @@ def ce_kl_loss(logits, target_logits, prepared, objective):
     ce, kl = [(x * weights).sum() for x in (ce, kl)]
     numerator = o.ce * ce + o.kl * kl
     den = denominator.clamp_min(1e-6)
-    metrics = LossMetrics(ce / den, kl / den, numerator, denominator)
+    accept_len_sum, accept_len_total = acceptance_length_counts(probs, target, prepared.valid)
+    metrics = LossMetrics(
+        ce / den, kl / den, numerator, denominator, accept_len_sum, accept_len_total
+    )
     saved = LossActivations(o, logits, probs, target, weights, labels)
     return metrics, saved
 
