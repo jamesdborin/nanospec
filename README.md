@@ -198,6 +198,15 @@ incompatible and must be regenerated; no migration or compatibility mode is prov
 Keep the same seed, sequence length and token data to continue the same data stream.
 Each save creates a new checkpoint generation; its exact directory is in the report.
 
+Add `--checkpoint-every N` to `--mode train` (or `python -m nanospec.train`) to save
+resumable drafter weights and optimizer shards every N completed training steps.
+The default `0` disables periodic saves; negative values are rejected. Scheduling
+uses absolute steps after resume: resuming step 3 with N=2 saves at steps 4, 6, etc.
+The final step is always saved, only once if it is also a scheduled step. Rank 0
+logs each saved directory; training reports list all saves as `checkpoints`
+(`step`, `path`) and keep `checkpoint` as the final directory. These are the existing
+resumable model/optimizer shards, not an inference-engine export.
+
 On an equivalent local node, install the core package with `pip install -e .`,
 cache the pinned model, then use
 `torchrun --standalone --nproc_per_node=8 -m nanospec.train`. The CLI also
