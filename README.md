@@ -206,6 +206,116 @@ accepts `--tokens /path/to/tokens.pt` (an integer tensor `[samples, seq_len]`),
 Without a token file it generates dummy data. A fixed dataset, tokenizer pipeline,
 validation acceptance target and speedrun scoring rules have not yet been chosen.
 
+## SGLang DSPark checkpoint interchange
+
+Import and export **local pretrained DSPark** checkpoints without installing an
+inference engine in the nanospec environment:
+
+```bash
+python -m nanospec.sglang import /path/to/pretrained-dspark outputs/imported-draft
+python -m nanospec.sglang export outputs/imported-draft outputs/sglang-draft
+```
+
+Output directories must be new. The imported directory contains nanospec's
+`config.json` and `model.safetensors`, plus `sglang_config.json` and
+`auxiliary.safetensors`. Keep the whole directory: the sidecars retain the
+original runtime configuration and the confidence head and any checkpoint
+embedding/LM-head tensors, without casting or dropping weights. Export reverses
+`fc.weight` → `context_proj.weight`, `hidden_norm.weight` →
+`context_norm.weight`, and `norm.weight` → `final_norm.weight`; every other
+supported tensor keeps its name. Single-file and indexed sharded safetensors
+inputs are supported; exports use a single `model.safetensors`.
+
+This deliberately supports only the Qwen3-shaped `Qwen3DSparkModel` architecture
+with `model_type=qwen3`: bias-free full attention, full-head default NeoX RoPE,
+SwiGLU, a positive-rank vanilla Markov head, explicit target capture IDs, and a
+trained confidence head. Unknown architecture/configuration fields, unsupported
+RoPE/attention/head variants, missing or unexpected tensors, shape mismatches,
+and dtype conversions fail rather than being silently ignored. SGLang's
+`num_target_layers` is the **target decoder depth**; nanospec's field with that
+name is the **number of captured layers**. The converter translates both
+explicitly. This is not a generic Hugging Face model exporter, nor a DFlash-only,
+LFM2, Gemma, quantized, or DeepSeek-V4 DSPark converter.
+
+For training through the existing Python API, supply the **corresponding target**
+embedding and LM-head weights (use the same weight for both if the target ties
+them):
+
+```python
+from nanospec.config import Objective
+from nanospec.dspark import DSpark
+from nanospec.sglang import DraftCheckpoint
+
+checkpoint = DraftCheckpoint.load("outputs/imported-draft")
+model = checkpoint.build_model(target_embedding, target_lm_head, device="cuda")
+objective = Objective(block_size=checkpoint.sglang_config["block_size"])
+# Supply matching target-layer features to nanospec.train.train(...).
+model.save_sglang("outputs/sglang-draft-from-model")
+
+# Equivalent direct load, including the original auxiliary state:
+model = DSpark.from_sglang(
+    "/path/to/pretrained-dspark", target_embedding, target_lm_head, device="cuda"
+)
+```
+
+`save_sglang()` gathers the current backbone/Markov weights collectively on all
+training ranks; only rank zero writes. It requires preserved import metadata.
+The existing `nanospec.checkpoint.save/restore` optimizer checkpoints also retain
+that metadata and auxiliary state, so saving after resume does not lose the
+confidence head. Ordinary `draft_state_dict()` intentionally remains the
+trainable backbone/Markov state, not a standalone SGLang export. Nanospec's CE/KL
+trainer **does not train the confidence head**: it is retained unchanged. An
+immediate import/export is lossless; acceptance parity is not promised after
+training updates or deliberate weight changes. The command-line trainer's
+pinned 27B teacher is unchanged; converting a small-model draft does not make
+that trainer support a different teacher.
+
+The runtime format is verified with **SGLang 0.5.21** (release source revision
+`e00930c5489053f26d86b179cee0d087f846acbb`), which has a dedicated DSPark worker
+and loads `Qwen3DSparkModel` via its DFlash backbone plus Markov/confidence heads.
+Use `speculative_algorithm="DSPARK"`, **not** `"DFLASH"`. The public pretrained
+`deepseek-ai/dspark_qwen3_4b_block7` at revision
+`3457dff1417cb84927f6098a5fcb7cee85c934b7` is compatible with the target
+`Qwen/Qwen3-4B` at revision `1cfa9a7208912126459214e8b04321603b3df60c`.
+Install SGLang in a **separate environment**; its Torch/Transformers versions
+differ from nanospec's pins. A small-memory offline runtime configuration is:
+
+```python
+import sglang
+
+engine = sglang.Engine(
+    model_path="/path/to/Qwen3-4B",
+    speculative_algorithm="DSPARK",
+    speculative_draft_model_path="outputs/sglang-draft",
+    attention_backend="triton",
+    speculative_draft_attention_backend="flashinfer",
+    dtype="bfloat16",
+    random_seed=42,
+    mem_fraction_static=0.94,
+    max_total_tokens=512,
+    max_running_requests=1,
+    context_length=512,
+    chunked_prefill_size=128,
+    disable_cuda_graph=True,
+    cuda_graph_backend_prefill="disabled",
+    disable_radix_cache=True,
+)
+try:
+    result = engine.generate("The capital of France is", {
+        "temperature": 0.0, "max_new_tokens": 64,
+        "ignore_eos": True, "sampling_seed": 42,
+    })
+    print(result["meta_info"])
+finally:
+    engine.shutdown()
+```
+
+Use the same target revision, input, seed, sampling parameters, and engine
+configuration when comparing an original checkpoint with its export. Compare
+all `spec_*` response fields, including counts and histograms, not just generated
+text. External SPS/STS calibration files, if used, must also be identical; they
+are runtime inputs, not tensors in the model checkpoint.
+
 ## Numerical and performance boundaries
 
 The reverse pass is fully explicit, including attention probabilities and their

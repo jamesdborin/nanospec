@@ -7,6 +7,7 @@ from pathlib import Path
 
 import torch
 import torch.distributed as dist
+from safetensors.torch import load_file, save_file
 
 from nanospec.config import TARGET_MODEL, TARGET_REVISION
 
@@ -34,6 +35,12 @@ def save(path, model, optimizer, objective, step):
     if first.world_size > 1:
         dist.barrier(group=first.group)
     if first.rank == 0:
+        sglang_config = getattr(model, "_sglang_config", None)
+        if sglang_config is not None:
+            from nanospec.sglang import validate_auxiliary
+
+            validate_auxiliary(sglang_config, model._sglang_auxiliary)
+            save_file(model._sglang_auxiliary, path / "sglang_auxiliary.safetensors")
         metadata = {
             "config": model.config.to_dict(),
             "objective": asdict(objective),
@@ -47,6 +54,8 @@ def save(path, model, optimizer, objective, step):
                 for k in ("lr", "weight_decay", "betas", "eps", "max_grad_norm")
             },
         }
+        if sglang_config is not None:
+            metadata["sglang_config"] = sglang_config
         temp = path / "metadata.tmp"
         temp.write_text(json.dumps(metadata, indent=2))
         temp.replace(path / "metadata.json")
@@ -69,6 +78,17 @@ def restore(path, model, optimizer, objective):
         raise ValueError("Checkpoint objective mismatch")
     if meta["target"] != TARGET_MODEL or meta["target_revision"] != TARGET_REVISION:
         raise ValueError("Checkpoint teacher revision mismatch")
+    sglang_config = meta.get("sglang_config")
+    auxiliary = {}
+    if sglang_config is not None:
+        from nanospec.sglang import draft_config, validate_auxiliary
+
+        if json.dumps(draft_config(sglang_config).to_dict(), sort_keys=True) != json.dumps(
+            model.config.to_dict(), sort_keys=True
+        ):
+            raise ValueError("Checkpoint SGLang configuration mismatch")
+        auxiliary = load_file(path / "sglang_auxiliary.safetensors")
+        validate_auxiliary(sglang_config, auxiliary)
     state = torch.load(path / f"rank-{first.rank}.pt", map_location="cpu", weights_only=True)
     if state["step"] != meta["step"]:
         raise ValueError("Checkpoint rank file does not match its metadata")
@@ -78,5 +98,6 @@ def restore(path, model, optimizer, objective):
     for key, value in meta["optimizer"].items():
         setattr(optimizer, key, value)
     optimizer.steps = state["optimizer_steps"]
+    model._sglang_config, model._sglang_auxiliary = sglang_config, auxiliary
     torch.cuda.set_rng_state(state["rng"])
     return state["step"]

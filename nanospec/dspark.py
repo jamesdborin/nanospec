@@ -145,6 +145,23 @@ def prepare(ids, loss_mask, o, anchors=None):
 
 
 class DSpark(nn.Module):
+    @classmethod
+    def from_sglang(cls, path, embedding, lm_head, *, device, dtype=None, **sharding):
+        """Import a supported local DSPark checkpoint, preserving runtime-only state."""
+        from nanospec.sglang import DraftCheckpoint
+
+        return DraftCheckpoint.load(path).build_model(
+            embedding, lm_head, device=device, dtype=dtype, **sharding
+        )
+
+    def save_sglang(self, path):
+        """Collective on training ranks; rank zero writes a new SGLang draft directory."""
+        from nanospec.sglang import DraftCheckpoint
+
+        checkpoint = DraftCheckpoint.from_model(self)
+        if self.sharding.context.rank == 0:
+            checkpoint.save_sglang(path)
+
     def __init__(
         self,
         config,
