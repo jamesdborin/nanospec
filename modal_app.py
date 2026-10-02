@@ -122,7 +122,7 @@ def run_gpu(
                 "",
                 gpu_model,
                 learning_rate,
-                dataset_examples,
+                dataset_examples=dataset_examples,
             )
             results.append((case, result))
             if result.get("passed") is False:
@@ -252,7 +252,7 @@ def main(
         checkpoint,
         gpu_model,
         learning_rate,
-        dataset_examples,
+        dataset_examples=dataset_examples,
     )
     if mode != "sequence":
         results = [((mode, config, train_gpus, dtype), results)]
